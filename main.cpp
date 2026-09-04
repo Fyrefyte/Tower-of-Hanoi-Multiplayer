@@ -74,52 +74,51 @@ public:
     }
 };
 
-template <typename T = size_t, T maxSize = 20/*, T numTowers = 3*/>
+template <typename T = size_t, T maxSize = 20, T numTowers = 3>
 class Hanoi {
 private:
     T size;
-    Stack<T, maxSize> towerL;
-    Stack<T, maxSize> towerC;
-    Stack<T, maxSize> towerR;
-    //Stack<T, maxSize> towers[numTowers];
+    Stack<T, maxSize> towers[numTowers];
     T pieces[maxSize];
+    T goal;
+    const T towerCount = numTowers;
 public:
-    Hanoi() {
-        Hanoi(5);
-    }
-    Hanoi(T towerSize) {
+    Hanoi(T towerSize = 5, T goalTower = 2) {
         static_assert(is_arithmetic_v<T>, "Typename T must be numeric");
         size = towerSize;
+        goal = goalTower;
         for (T i = 0; i < size; i++) {
             pieces[i] = i + 1;
         }
+        for (T i = 0; i < numTowers; i++) {
+            towers[i] = Stack<T, maxSize>();
+        }
         reset();
     }
-    bool isLegalMove(Stack<T, maxSize>* tower1, Stack<T, maxSize>* tower2) {
-        if (tower1->isEmpty() || tower2->length() == size || !(tower2->isEmpty() || tower1->top() < tower2->top())) return false;
+    bool isLegalMove(T tower1, T tower2) {
+        if (towers[tower1].isEmpty()
+            || towers[tower2].length() == size
+            || !(towers[tower2].isEmpty()
+                 || towers[tower1].top() < towers[tower2].top())) return false;
         else return true;
     }
     bool checkWin() {
-        if (towerR.length() == size) return true;
+        if (towers[goal].length() == size) return true;
         return false;
     }
-    bool movePiece(Stack<T, maxSize>* tower1, Stack<T, maxSize>* tower2) {
+    bool movePiece(T tower1, T tower2) {
         if (!isLegalMove(tower1, tower2)) return false;
-        tower2->push(tower1->pop());
+        towers[tower2].push(towers[tower1].pop());
         return true;
     }
     void reset() {
-        towerL.empty();
-        towerC.empty();
-        towerR.empty();
-
+        for (T i = 0; i < numTowers; i++) {
+            towers[i].empty();
+        }
         for (T i = size; i > 0; i--) {
-            towerL.push(&pieces[i-1]);
+            towers[0].push(&pieces[i-1]);
         }
     }
-    Stack<T, maxSize>& getTowerL() {return towerL;}
-    Stack<T, maxSize>& getTowerC() {return towerC;}
-    Stack<T, maxSize>& getTowerR() {return towerR;}
     ostringstream computeSegment(const T thisLayerWidth, const T belowLayerWidth) {
         #define MIDDLE_SPACING 2
         #define SPACE_CHAR ' '
@@ -166,49 +165,39 @@ public:
         return out;
     }
 
-    friend void clearConsole(Hanoi<T, maxSize>& towers) {
+    friend void clearConsole(Hanoi<T, maxSize, numTowers>& towers) {
         cout << "\x1b[H\x1b[2J" << flush;
     }
-    friend void printTowers(Hanoi<T, maxSize>& towers) {
-        #define TOWER_AT(tower, x) (x < tower->length() ? *tower->at(x) : 0)
-        #define TOWER_L_AT(x) TOWER_AT(towerL, x)
-        #define TOWER_C_AT(x) TOWER_AT(towerC, x)
-        #define TOWER_R_AT(x) TOWER_AT(towerR, x)
+    friend void printTowers(Hanoi<T, maxSize, numTowers>& towers) {
+        #define TOWER_AT(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at(x) : 0)
         #define TOWER_SEPARATION " ";
 
         ostringstream stream;
 
-        Stack<T, maxSize>* towerL = &towers.towerL;
-        Stack<T, maxSize>* towerC = &towers.towerC;
-        Stack<T, maxSize>* towerR = &towers.towerR;
-
         // Top layer
         cout << TOWER_SEPARATION;
-        cout << towers.computeSegment(0, TOWER_L_AT(towers.size - 1)).str() << TOWER_SEPARATION;
-        cout << towers.computeSegment(0, TOWER_C_AT(towers.size - 1)).str() << TOWER_SEPARATION;
-        cout << towers.computeSegment(0, TOWER_R_AT(towers.size - 1)).str() << TOWER_SEPARATION;
+        for (T i = 0; i < towers.towerCount; i++)
+            cout << towers.computeSegment(0, TOWER_AT(i, towers.size - 1)).str() << TOWER_SEPARATION;
         cout << endl;
 
         // Middle layers
         for (T i = towers.size - 1; i > 0; i--) {
             cout << TOWER_SEPARATION;
-            cout << towers.computeSegment(TOWER_L_AT(i), TOWER_L_AT(i-1)).str() << TOWER_SEPARATION;
-            cout << towers.computeSegment(TOWER_C_AT(i), TOWER_C_AT(i-1)).str() << TOWER_SEPARATION;
-            cout << towers.computeSegment(TOWER_R_AT(i), TOWER_R_AT(i-1)).str() << TOWER_SEPARATION;
+            for (T j = 0; j < towers.towerCount; j++)
+                cout << towers.computeSegment(TOWER_AT(j, i), TOWER_AT(j, i-1)).str() << TOWER_SEPARATION;
             cout << endl;
         }
 
         // Bottom layer
         cout << TOWER_SEPARATION;
-        cout << towers.computeSegment(TOWER_L_AT(0), 0).str() << TOWER_SEPARATION;
-        cout << towers.computeSegment(TOWER_C_AT(0), 0).str() << TOWER_SEPARATION;
-        cout << towers.computeSegment(TOWER_R_AT(0), 0).str() << TOWER_SEPARATION;
+        for (T i = 0; i < towers.towerCount; i++)
+            cout << towers.computeSegment(TOWER_AT(i, 0), 0).str() << TOWER_SEPARATION;
         cout << endl;
 
         cout << stream.str();
     }
 
-    friend void gameStep(Hanoi<T, maxSize>& towers) {
+    friend void gameStep(Hanoi<T, maxSize, numTowers>& towers) {
 
         // Clear console and display current tower setup
         clearConsole(towers);
@@ -220,16 +209,16 @@ public:
             uint8_t choice1;
             uint8_t choice2;
             char inpChar;
-            Stack<T, maxSize>* tower1;
-            Stack<T, maxSize>* tower2;
+            // Stack<T, maxSize>* tower1;
+            // Stack<T, maxSize>* tower2;
             while (true) {
-                cout << endl << "Select a tower to move from (1, 2, or 3): " << flush;
+                cout << endl << "Select a tower to move from (1 to " << static_cast<size_t>(numTowers) << "): " << flush;
                 try {
                     cin >> inpChar;
                     choice1 = static_cast<uint8_t>(inpChar - '0');
-                    if (choice1 >= 1 && choice1 <= 3) {
+                    if (choice1 >= 1 && choice1 <= numTowers) {
                         // string choiceStr = (choice1 == 1 ? "Left" : (choice1 == 2 ? "Center" : "Right"));
-                        tower1 = (choice1 == 1 ? &towers.towerL : (choice1 == 2) ? &towers.towerC : &towers.towerR);
+                        // tower1 = (choice1 == 1 ? &towers.towerL : (choice1 == 2) ? &towers.towerC : &towers.towerR);
                         // cout << choiceStr << " tower chosen" << endl;
                         break;
                     }
@@ -239,14 +228,14 @@ public:
 
             // Get the tower to move to this step
             while (true) {
-                cout << endl << "Select a tower to move to (1, 2, or 3): " << flush;
+                cout << endl << "Select a tower to move to (1 to " << static_cast<size_t>(numTowers) << "): " << flush;
                 try {
                     cin >> inpChar;
                     choice2 = static_cast<uint8_t>(inpChar - '0');
-                    if (choice2 >= 1 && choice2 <= 3 && choice2 != choice1) {
-                        string choiceStr = (choice2 == 1 ? "Left" : (choice2 == 2 ? "Center" : "Right"));
-                        tower2 = (choice2 == 1 ? &towers.towerL : (choice2 == 2) ? &towers.towerC : &towers.towerR);
-                        cout << choiceStr << " tower chosen" << endl;
+                    if (choice2 >= 1 && choice2 <= numTowers && choice2 != choice1) {
+                        // string choiceStr = (choice2 == 1 ? "Left" : (choice2 == 2 ? "Center" : "Right"));
+                        // tower2 = (choice2 == 1 ? &towers.towerL : (choice2 == 2) ? &towers.towerC : &towers.towerR);
+                        // cout << choiceStr << " tower chosen" << endl;
                         break;
                     }
                 }
@@ -254,12 +243,12 @@ public:
             }
 
             // Actually move the piece
-            if (towers.movePiece(tower1, tower2)) break;
-            // else cout << "Invalid move, try again" << endl;
+            if (towers.movePiece(choice1 - 1, choice2 - 1)) break;
+            else cout << "Invalid move, try again" << endl;
         }
     }
 
-    friend void gameLoop(Hanoi<T, maxSize>& towers) {
+    friend void gameLoop(Hanoi<T, maxSize, numTowers>& towers) {
         while (!towers.checkWin()) gameStep(towers);
         clearConsole(towers);
         printTowers(towers);
