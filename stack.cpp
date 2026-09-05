@@ -7,6 +7,7 @@
  *
  */
 
+#pragma once
 #include "stack.h"
 #include <stdexcept>
 
@@ -108,4 +109,64 @@ bool Stack<T, size>::isFull() {
 template <typename T, std::size_t size>
 bool Stack<T, size>::couldAdd(size_t more) {
     return _top < size - more;
+}
+
+//////////////////////////////////////////////////////////////
+
+template <typename T1, typename T2, std::size_t size>
+StackPaired<T1, T2, size>::StackPaired() {}
+
+template <typename T1, typename T2, std::size_t size>
+void StackPaired<T1, T2, size>::push(T1* value1, T2* value2) {
+    stack1.push(value1);
+    stack2.push(value2);
+}
+
+template <typename T1, typename T2, std::size_t size>
+void StackPaired<T1, T2, size>::top(T1* value1, T2* value2) {
+    value1 = stack1.top();
+    value2 = stack2.top();
+}
+
+template <typename T1, typename T2, std::size_t size>
+void StackPaired<T1, T2, size>::pop(T1* value1, T2* value2) {
+    value1 = stack1.pop();
+    value2 = stack2.pop();
+}
+
+template <typename T1, typename T2, std::size_t size>
+void StackPaired<T1, T2, size>::at(T1* value1, T2* value2, size_t index) {
+    value1 = stack1.at(index);
+    value2 = stack2.at(index);
+}
+
+template <typename T1, typename T2, std::size_t size>
+size_t StackPaired<T1, T2, size>::length() {
+    return stack1.length();
+}
+
+template <typename T1, typename T2, std::size_t size>
+size_t StackPaired<T1, T2, size>::maxLength() {
+    return size;
+}
+
+template <typename T1, typename T2, std::size_t size>
+void StackPaired<T1, T2, size>::empty() {
+    stack1.empty();
+    stack2.empty();
+}
+
+template <typename T1, typename T2, std::size_t size>
+bool StackPaired<T1, T2, size>::isEmpty() {
+    return stack1.isEmpty();
+}
+
+template <typename T1, typename T2, std::size_t size>
+bool StackPaired<T1, T2, size>::isFull() {
+    return stack1.isFull();
+}
+
+template <typename T1, typename T2, std::size_t size>
+bool StackPaired<T1, T2, size>::couldAdd(size_t more) {
+    return stack1.couldAdd(more);
 }

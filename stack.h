@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef STACK_H
 #define STACK_H
 
@@ -73,6 +75,32 @@ public:
         stream << "]";
 
         std::cout << stream.str();
+    }
+};
+
+template <typename T1, typename T2, std::size_t size>
+class StackPaired {
+private:
+    Stack<T1, size> stack1;
+    Stack<T2, size> stack2;
+public:
+    StackPaired();
+    void push(T1*, T2*);
+    void top(T1*, T2*);
+    void pop(T1*, T2*);
+    void at(T1*, T2*, size_t);
+    size_t length();
+    size_t maxLength();
+    void empty();
+    bool isFull();
+    bool isEmpty();
+    bool couldAdd(size_t);
+
+    friend Stack<T1, size> getStack1(const StackPaired<T1, T2, size>& stack) {
+        return stack.stack1;
+    }
+    friend Stack<T2, size> getStack2(const StackPaired<T1, T2, size>& stack) {
+        return stack.stack2;
     }
 };
 

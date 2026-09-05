@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(EECE2080C_tower main.cpp
-    stack.h stack.cpp)
+    stack.h stack.cpp
+    hanoi.h hanoi.cpp)
 
 include(GNUInstallDirs)
 install(TARGETS EECE2080C_tower
