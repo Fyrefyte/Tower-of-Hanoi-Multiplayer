@@ -118,7 +118,13 @@ int main()
 {
     // StackUnitTest::unitTest(false);
 
-    Hanoi<size_t, 5> hanoi;
+    // StackPaired<char, char, 5> stack;
+    // char a = 'a';
+    // char b = 'b';
+    // char c = 'c';
+    // stack.push(&a, &b);
+
+    // cout << "Pushed " << *stack.top1() << " paired with " << *stack.top2() << endl;
 
     intro();
 

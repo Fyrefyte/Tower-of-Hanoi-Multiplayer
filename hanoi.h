@@ -150,7 +150,7 @@ public:
 
     friend void printTowers(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
         #define TOWER_AT1(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at1(x) : 0)
-        #define TOWER_AT2(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at2(x) : 0)
+        #define TOWER_AT2(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at2(x) : -1)
         #define TOWER_SEPARATION " ";
 
         std::ostringstream stream;
@@ -219,7 +219,9 @@ public:
     }
 
     friend void gameLoop(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        while (towers.checkWin() == static_cast<T>(-1)) gameStep(towers);
+        while (towers.checkWin() == static_cast<T>(-1)) {
+            gameStep(towers);
+        }
         clearConsole(towers);
         printTowers(towers);
         std::cout << "Player " << towers.checkWin() + 1 << " wins!" << std::endl;

@@ -111,7 +111,7 @@ bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::checkOwns(T 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
 T HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::checkWin() {
     for (T i = 0; i < numPlayers; i++) {
-        for (T j = 0; i < numGoals; j++) {
+        for (T j = 0; j < numGoals; j++) {
             if (towers[goals[i][j]].length() == size && checkOwns(goals[i][j], i)) return i;
         }
     }
@@ -144,16 +144,17 @@ void Hanoi<T, maxSize, numTowers>::reset() {
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
 void HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::reset() {
+    std::cout << "Starts: " << static_cast<size_t>(starts[0]) << ", " << static_cast<size_t>(starts[1]) << std::endl;
     for (T i = 0; i < numTowers; i++) {
         towers[i].empty();
     }
     for (T i = size; i > 0; i--) {
         for (T j = 0; j < numPlayers; j++) {
-            towers[j].push(&pieces[i-1], &j);
+            std::cout << "Pushing piece " << static_cast<size_t>(pieces[i-1]) << " for player " << static_cast<size_t>(j) << " at tower " << static_cast<size_t>(starts[j]) << std::endl;
+            towers[starts[j]].push(&pieces[i-1], &j);
         }
     }
 }
-
 
 template <typename T, T maxSize, T numTowers>
 std::ostringstream Hanoi<T, maxSize, numTowers>::computeSegment(const T thisLayerWidth, const T belowLayerWidth) {
