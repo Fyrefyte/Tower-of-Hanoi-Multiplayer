@@ -99,12 +99,18 @@ void intro() {
         catch (exception e) {}
     }
     switch (inp) {
-        case 2:
+        case 2: {
+            uint8_t startTowers[2] = {0, 4};
+            uint8_t goalTowers[2][2] = {{3, 4}, {0, 1}};
+            HanoiMultiplayer<uint8_t> hanoi = HanoiMultiplayer<uint8_t>(size, startTowers, goalTowers);
+            gameLoop(hanoi);
             break;
-        default: // 1 player mode
+        }
+        default: { // 1 player mode
             Hanoi<uint8_t> hanoi = Hanoi<uint8_t>(size);
             gameLoop(hanoi);
             break;
+        }
     }
 }
 

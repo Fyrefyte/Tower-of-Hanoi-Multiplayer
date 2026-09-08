@@ -87,8 +87,14 @@ public:
     StackPaired();
     void push(T1*, T2*);
     void top(T1*, T2*);
+    T1* top1();
+    T2* top2();
     void pop(T1*, T2*);
+    T1* pop1();
+    T2* pop2();
     void at(T1*, T2*, size_t);
+    T1* at1(size_t);
+    T2* at2(size_t);
     size_t length();
     size_t maxLength();
     void empty();

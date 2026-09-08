@@ -7,7 +7,6 @@
  *
  */
 
-#pragma once
 #include "stack.h"
 #include <stdexcept>
 
@@ -129,15 +128,47 @@ void StackPaired<T1, T2, size>::top(T1* value1, T2* value2) {
 }
 
 template <typename T1, typename T2, std::size_t size>
+T1* StackPaired<T1, T2, size>::top1() {
+    return stack1.top();
+}
+
+template <typename T1, typename T2, std::size_t size>
+T2* StackPaired<T1, T2, size>::top2() {
+    return stack2.top();
+}
+
+template <typename T1, typename T2, std::size_t size>
 void StackPaired<T1, T2, size>::pop(T1* value1, T2* value2) {
     value1 = stack1.pop();
     value2 = stack2.pop();
 }
 
 template <typename T1, typename T2, std::size_t size>
+T1* StackPaired<T1, T2, size>::pop1() {
+    stack2.pop();
+    return stack1.pop();
+}
+
+template <typename T1, typename T2, std::size_t size>
+T2* StackPaired<T1, T2, size>::pop2() {
+    stack1.pop();
+    return stack2.pop();
+}
+
+template <typename T1, typename T2, std::size_t size>
 void StackPaired<T1, T2, size>::at(T1* value1, T2* value2, size_t index) {
     value1 = stack1.at(index);
     value2 = stack2.at(index);
+}
+
+template <typename T1, typename T2, std::size_t size>
+T1* StackPaired<T1, T2, size>::at1(size_t index) {
+    return stack1.at(index);
+}
+
+template <typename T1, typename T2, std::size_t size>
+T2* StackPaired<T1, T2, size>::at2(size_t index) {
+    return stack1.at(index);
 }
 
 template <typename T1, typename T2, std::size_t size>
