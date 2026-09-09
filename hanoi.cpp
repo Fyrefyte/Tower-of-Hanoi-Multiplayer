@@ -19,9 +19,10 @@ Hanoi<T, maxSize, numTowers>::Hanoi(T towerSize, T goalTower) {
 }
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
-HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(T towerSize, T (&startTowers)[numPlayers], T (&goalTowers)[numPlayers][numGoals]) {
+HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(T towerSize, T (&startTowers)[numPlayers], T (&goalTowers)[numPlayers][numGoals], bool patterned) {
     static_assert(std::is_arithmetic_v<T>, "Typename T must be numeric");
     size = towerSize;
+    pattern = patterned;
     for (T i = 0; i < numPlayers; i++) std::copy(goalTowers[i], goalTowers[i] + numPlayers, goals[i]);
     std::copy(startTowers, startTowers + numPlayers, starts);
     for (T i = 0; i < size; i++) {
@@ -111,6 +112,14 @@ bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::checkOwns(T 
 }
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
+T HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::goalAt(T tower) {
+    for (T i = 0; i < numPlayers; i++)
+        for (T j = 0; j < numGoals; j++)
+            if (goals[i][j] == tower) return i;
+    return -1;
+}
+
+template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
 T HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::checkWin() {
     for (T i = 0; i < numPlayers; i++) {
         for (T j = 0; j < numGoals; j++) {
@@ -124,6 +133,7 @@ template <typename T, T maxSize, T numTowers>
 bool Hanoi<T, maxSize, numTowers>::movePiece(T tower1, T tower2) {
     if (!canMove(tower1, tower2)) return false;
     towers[tower2].push(towers[tower1].pop());
+    moveCount++;
     return true;
 }
 
@@ -132,6 +142,7 @@ bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::movePiece(T 
     if (!canMove(tower1, tower2)) return false;
     towers[tower2].push(towers[tower1].top1(), towers[tower1].top2());
     towers[tower1].pop1();
+    moveCount++;
     return true;
 }
 
@@ -215,6 +226,7 @@ char HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::getPlayerCha
         case static_cast<T>(2): return 'L';
         case static_cast<T>(3): return '#';
         case static_cast<T>(4): return '+';
+        case static_cast<T>(5): return '>';
         default: return '?';
     }
 }

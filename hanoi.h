@@ -6,6 +6,8 @@
 #include "stack.h"
 #include <sstream>
 
+#define CLEAR_CONSOLE std::cout << "\x1b[H\x1b[2J" << std::flush;
+
 template <typename T = size_t, T maxSize = 20, T numTowers = 3>
 class Hanoi {
 private:
@@ -14,6 +16,7 @@ private:
     T pieces[maxSize];
     T goal;
     const T towerCount = numTowers;
+    size_t moveCount = 0;
 public:
     Hanoi(T = 5, T = 2);
     bool canMoveFrom(T);
@@ -24,9 +27,6 @@ public:
     void reset();
     std::ostringstream computeSegment(const T, const T);
 
-    friend void clearConsole(Hanoi<T, maxSize, numTowers>& towers) {
-        std::cout << "\x1b[H\x1b[2J" << std::flush;
-    }
     friend void printTowers(Hanoi<T, maxSize, numTowers>& towers) {
         #define TOWER_AT(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at(x) : 0)
         #define TOWER_SEPARATION " ";
@@ -53,13 +53,23 @@ public:
             std::cout << towers.computeSegment(TOWER_AT(i, 0), 0).str() << TOWER_SEPARATION;
         std::cout << std::endl;
 
-        std::cout << stream.str();
+        // Goal indicators
+        std::cout << TOWER_SEPARATION;
+        for (T i = 0; i < towers.towerCount; i++) {
+            std::cout << std::string(towers.size + 1, ' ');
+            if (towers.goal == i) std::cout << "^^";
+            else std::cout << "  ";
+            std::cout << std::string(towers.size + 2, ' ');
+        }
+        std::cout << std::endl;
+
+        // std::cout << stream.str();
     }
 
     friend void gameStep(Hanoi<T, maxSize, numTowers>& towers) {
 
         // Clear console and display current tower setup
-        clearConsole(towers);
+        CLEAR_CONSOLE;
         printTowers(towers);
 
         // Loop for checking invalid move states
@@ -111,9 +121,19 @@ public:
 
     friend void gameLoop(Hanoi<T, maxSize, numTowers>& towers) {
         while (!towers.checkWin()) gameStep(towers);
-        clearConsole(towers);
+        CLEAR_CONSOLE;
         printTowers(towers);
         std::cout << "You win!" << std::endl;
+        std::cout << "You took " << towers.moveCount << " moves, which is ";
+        if (towers.moveCount == (1LL << towers.size) - 1) {
+            std::cout << "optimal!" << std::endl;
+        }
+        else if (towers.moveCount == (1LL << towers.size)) {
+            std::cout << "1 move more than optimal." << std::endl;
+        }
+        else {
+            std::cout << (towers.moveCount - (1LL << towers.size) + 1) << " moves more than optimal." << std::endl;
+        }
         // TODO add play again option
     }
 };
@@ -129,60 +149,82 @@ private:
     T starts[numPlayers];
     const T towerCount = numTowers;
     T turn = 0;
+    size_t moveCount = 0;
+    bool pattern;
 public:
-    HanoiMultiplayer(T, T(&)[numPlayers], T(&)[numPlayers][numGoals]);
+    HanoiMultiplayer(T, T(&)[numPlayers], T(&)[numPlayers][numGoals], bool patterned = true);
     bool canMoveFrom(T);
     bool canMoveTo(T);
     bool canMove(T, T);
     bool checkOwns(T, T);
+    T goalAt(T);
     T checkWin();
     bool movePiece(T, T);
     void reset();
     static char getPlayerChar(const T);
     std::ostringstream computeSegment(const T, const T, const char);
 
-    friend void clearConsole(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        std::cout << "\x1b[H\x1b[2J" << std::flush;
-    }
-
     friend void printTurn(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        std::cout << "Player " << static_cast<size_t>(towers.turn)+1 << "'s turn" << std::endl;
+        std::cout << "Player " << static_cast<size_t>(towers.turn)+1 << "'s turn";
+        if (towers.pattern && towers.moveCount < numPlayers) std::cout << std::string(15, ' ') << "____" << std::endl << "(Your pieces look like this: |" << std::string(4, towers.getPlayerChar(towers.turn)) << "|)" << std::endl;
     }
 
     friend void printTowers(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        #define TOWER_AT1(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at1(x) : 0)
-        #define TOWER_AT2(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at2(x) : -1)
-        #define TOWER_SEPARATION " ";
+#define TOWER_AT1(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at1(x) : 0)
+#define TOWER_AT2(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at2(x) : -1)
+#define TOWER_SEPARATION " ";
+#define PLAYER_CHAR(tower, x) towers.pattern ? getPlayerChar(TOWER_AT2(tower, x)) : static_cast<size_t>(TOWER_AT2(tower, x)) + '1'
 
         std::ostringstream stream;
+
+        // Tower numbers
+        std::cout << TOWER_SEPARATION;
+        for (size_t i = 1; i <= towers.towerCount; i++) {
+            std::cout << std::string(towers.size + 1, ' ');
+            std::cout << i;
+            if (i < 10) std::cout << ' ';
+            std::cout << std::string(towers.size + 1, ' ') << TOWER_SEPARATION;
+        }
+        std::cout << std::endl;
 
         // Top layer
         std::cout << TOWER_SEPARATION;
         for (T i = 0; i < towers.towerCount; i++)
-            std::cout << towers.computeSegment(0, TOWER_AT1(i, towers.size - 1), getPlayerChar(TOWER_AT2(i, towers.size - 1))).str() << TOWER_SEPARATION;
+            std::cout << towers.computeSegment(0, TOWER_AT1(i, towers.size - 1), PLAYER_CHAR(i, towers.size - 1)).str() << TOWER_SEPARATION;
         std::cout << std::endl;
 
         // Middle layers
         for (T i = towers.size - 1; i > 0; i--) {
             std::cout << TOWER_SEPARATION;
             for (T j = 0; j < towers.towerCount; j++)
-                std::cout << towers.computeSegment(TOWER_AT1(j, i), TOWER_AT1(j, i-1), getPlayerChar(TOWER_AT2(j, i))).str() << TOWER_SEPARATION;
+                std::cout << towers.computeSegment(TOWER_AT1(j, i), TOWER_AT1(j, i-1), PLAYER_CHAR(j, i)).str() << TOWER_SEPARATION;
             std::cout << std::endl;
         }
 
         // Bottom layer
         std::cout << TOWER_SEPARATION;
         for (T i = 0; i < towers.towerCount; i++)
-            std::cout << towers.computeSegment(TOWER_AT1(i, 0), 0, getPlayerChar(TOWER_AT2(i, 0))).str() << TOWER_SEPARATION;
+            std::cout << towers.computeSegment(TOWER_AT1(i, 0), 0, PLAYER_CHAR(i, 0)).str() << TOWER_SEPARATION;
         std::cout << std::endl;
 
-        std::cout << stream.str();
+        // Goal indicators
+        std::cout << TOWER_SEPARATION;
+        for (T i = 0; i < towers.towerCount; i++) {
+            std::cout << std::string(towers.size + 1, ' ');
+            T goal = towers.goalAt(i);
+            if (goal != static_cast<T>(-1)) std::cout << static_cast<size_t>(goal + 1) << '^';
+            else std::cout << "  ";
+            std::cout << std::string(towers.size + 1, ' ') << TOWER_SEPARATION;
+        }
+        std::cout << std::endl;
+
+        // std::cout << stream.str();
     }
 
     friend void gameStep(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
 
         // Clear console and display current tower setup
-        clearConsole(towers);
+        CLEAR_CONSOLE;
         printTowers(towers);
         printTurn(towers);
 
@@ -191,12 +233,19 @@ public:
             // Get the tower to move from this step
             T choice1;
             T choice2;
-            char inpChar;
             while (true) {
                 std::cout << std::endl << "Select a tower to move from (1 to " << static_cast<size_t>(numTowers) << "): " << std::flush;
                 try {
-                    std::cin >> inpChar;
-                    choice1 = static_cast<T>(inpChar - '0');
+                    if (numTowers < 10) {
+                        char inpChar;
+                        std::cin >> inpChar;
+                        choice1 = static_cast<T>(inpChar - '0');
+                    }
+                    else {
+                        std::string inpStr;
+                        std::getline(std::cin, inpStr);
+                        choice1 = static_cast<T>(std::stoi(inpStr));
+                    }
                     /*if (towers.canMoveFrom(choice1)) */break;
                 }
                 catch (std::exception e) {}
@@ -206,8 +255,16 @@ public:
             while (true) {
                 std::cout << std::endl << "Select a tower to move to (1 to " << static_cast<size_t>(numTowers) << "): " << std::flush;
                 try {
-                    std::cin >> inpChar;
-                    choice2 = static_cast<T>(inpChar - '0');
+                    if (numTowers < 10) {
+                        char inpChar;
+                        std::cin >> inpChar;
+                        choice2 = static_cast<T>(inpChar - '0');
+                    }
+                    else {
+                        std::string inpStr;
+                        std::getline(std::cin, inpStr);
+                        choice2 = static_cast<T>(std::stoi(inpStr));
+                    }
                     /*if (towers.canMove(choice1, choice2)) */break;
                 }
                 catch (std::exception e) {}
@@ -224,7 +281,7 @@ public:
             gameStep(towers);
             ++towers.turn %= numPlayers;
         }
-        clearConsole(towers);
+        CLEAR_CONSOLE;
         printTowers(towers);
         std::cout << "Player " << towers.checkWin() + 1 << " wins!" << std::endl;
         // TODO add play again option
