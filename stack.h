@@ -79,7 +79,8 @@ public:
 };
 
 template <typename T1, typename T2, std::size_t size>
-class StackPaired {
+class StackPaired
+{
 private:
     Stack<T1, size> stack1;
     Stack<T2, size> stack2;

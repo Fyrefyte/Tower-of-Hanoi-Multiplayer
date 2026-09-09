@@ -9,7 +9,8 @@
 #define CLEAR_CONSOLE std::cout << "\x1b[H\x1b[2J" << std::flush;
 
 template <typename T = size_t, T maxSize = 20, T numTowers = 3>
-class Hanoi {
+class Hanoi
+{
 private:
     T size;
     Stack<T, maxSize> towers[numTowers];
@@ -139,7 +140,8 @@ public:
 };
 
 template <typename T = size_t, T maxSize = 20, T numTowers = 5, T numPlayers = 2, T numGoals = 2>
-class HanoiMultiplayer {
+class HanoiMultiplayer
+{
 private:
     T size;
     StackPaired<T, T, maxSize> towers[numTowers];
