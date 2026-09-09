@@ -168,7 +168,7 @@ T1* StackPaired<T1, T2, size>::at1(size_t index) {
 
 template <typename T1, typename T2, std::size_t size>
 T2* StackPaired<T1, T2, size>::at2(size_t index) {
-    return stack1.at(index);
+    return stack2.at(index);
 }
 
 template <typename T1, typename T2, std::size_t size>
