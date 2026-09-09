@@ -124,6 +124,7 @@ private:
     T size;
     StackPaired<T, T, maxSize> towers[numTowers];
     T pieces[maxSize];
+    T players[numPlayers];
     T goals[numPlayers][numGoals];
     T starts[numPlayers];
     const T towerCount = numTowers;
@@ -145,7 +146,7 @@ public:
     }
 
     friend void printTurn(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        std::cout << "Player " << towers.turn << "'s turn" << std::endl;
+        std::cout << "Player " << static_cast<size_t>(towers.turn)+1 << "'s turn" << std::endl;
     }
 
     friend void printTowers(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
@@ -221,6 +222,7 @@ public:
     friend void gameLoop(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
         while (towers.checkWin() == static_cast<T>(-1)) {
             gameStep(towers);
+            ++towers.turn %= numPlayers;
         }
         clearConsole(towers);
         printTowers(towers);

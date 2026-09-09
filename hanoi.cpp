@@ -30,6 +30,9 @@ HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(
     for (T i = 0; i < numTowers; i++) {
         towers[i] = StackPaired<T, T, maxSize>();
     }
+    for (T i = 0; i < numPlayers; i++) {
+        players[i] = i;
+    }
     reset();
 }
 
@@ -144,14 +147,15 @@ void Hanoi<T, maxSize, numTowers>::reset() {
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
 void HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::reset() {
-    std::cout << "Starts: " << static_cast<size_t>(starts[0]) << ", " << static_cast<size_t>(starts[1]) << std::endl;
+    // std::cout << "Starts: " << static_cast<size_t>(starts[0]) << ", " << static_cast<size_t>(starts[1]) << std::endl;
     for (T i = 0; i < numTowers; i++) {
         towers[i].empty();
     }
     for (T i = size; i > 0; i--) {
         for (T j = 0; j < numPlayers; j++) {
-            std::cout << "Pushing piece " << static_cast<size_t>(pieces[i-1]) << " for player " << static_cast<size_t>(j) << " at tower " << static_cast<size_t>(starts[j]) << std::endl;
-            towers[starts[j]].push(&pieces[i-1], &j);
+            // std::cout << "Pushing piece " << static_cast<size_t>(pieces[i-1]) << " for player " << static_cast<size_t>(j) << " at tower " << static_cast<size_t>(starts[j]) << std::endl;
+            towers[starts[j]].push(&pieces[i-1], &players[j]);
+            // std::cout << "Piece pushed: " << static_cast<size_t>(*towers[starts[j]].top1()) << " for player " << static_cast<size_t>(*towers[starts[j]].top2()) << std::endl;
         }
     }
 }
@@ -206,11 +210,11 @@ std::ostringstream Hanoi<T, maxSize, numTowers>::computeSegment(const T thisLaye
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
 char HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::getPlayerChar(const T player) {
     switch (player) {
-        case 0: return '_';
-        case 1: return 'L';
-        case 2: return '/';
-        case 3: return '#';
-        case 4: return '+';
+        case static_cast<T>(0): return '_';
+        case static_cast<T>(1): return '/';
+        case static_cast<T>(2): return 'L';
+        case static_cast<T>(3): return '#';
+        case static_cast<T>(4): return '+';
         default: return '?';
     }
 }

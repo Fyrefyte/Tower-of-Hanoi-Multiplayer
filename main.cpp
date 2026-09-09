@@ -116,28 +116,7 @@ void intro() {
 
 int main()
 {
-    // StackUnitTest::unitTest(false);
-
-    // StackPaired<char, char, 5> stack;
-    // char a = 'a';
-    // char b = 'b';
-    // char c = 'c';
-    // stack.push(&a, &b);
-
-    // cout << "Pushed " << *stack.top1() << " paired with " << *stack.top2() << endl;
-
     intro();
-
-    // gameLoop(hanoi);
-
-    // cout << hanoi.computeSegment(3, 4).str() << "|" << hanoi.computeSegment(0, 0).str() << "|" << hanoi.computeSegment(0, 0).str() << endl;
-
-    // cout << HanoiSinglePlayer<>::computeSegment(0, 3) << HanoiSinglePlayer<>::computeSegment(0, 1) << endl;
-    // cout << HanoiSinglePlayer<>::computeSegment(3, 4) << HanoiSinglePlayer<>::computeSegment(1, 2) << endl;
-    // cout << HanoiSinglePlayer<>::computeSegment(4, 2) << HanoiSinglePlayer<>::computeSegment(2, 3) << endl;
-    // cout << HanoiSinglePlayer<>::computeSegment(2, 1) << HanoiSinglePlayer<>::computeSegment(3, 4) << endl;
-    // cout << HanoiSinglePlayer<>::computeSegment(1, 5) << HanoiSinglePlayer<>::computeSegment(4, 5) << endl;
-    // cout << HanoiSinglePlayer<>::computeSegment(5, 0) << HanoiSinglePlayer<>::computeSegment(5, 0) << endl;
 
     return 0;
 }
