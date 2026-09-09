@@ -166,7 +166,7 @@ public:
         for (T i = towers.size - 1; i > 0; i--) {
             std::cout << TOWER_SEPARATION;
             for (T j = 0; j < towers.towerCount; j++)
-                std::cout << towers.computeSegment(TOWER_AT1(j, i), TOWER_AT1(j, i-1), getPlayerChar(TOWER_AT2(j, i-1))).str() << TOWER_SEPARATION;
+                std::cout << towers.computeSegment(TOWER_AT1(j, i), TOWER_AT1(j, i-1), getPlayerChar(TOWER_AT2(j, i))).str() << TOWER_SEPARATION;
             std::cout << std::endl;
         }
 

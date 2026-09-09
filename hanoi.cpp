@@ -69,8 +69,7 @@ bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::canMoveTo(T 
     return (
         tower >= 0 &&
         tower < numTowers &&
-        towers[tower].length() != size &&
-        *towers[tower].top2() == turn
+        towers[tower].length() != size
     );
 }
 
@@ -131,7 +130,8 @@ bool Hanoi<T, maxSize, numTowers>::movePiece(T tower1, T tower2) {
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
 bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::movePiece(T tower1, T tower2) {
     if (!canMove(tower1, tower2)) return false;
-    towers[tower2].push(towers[tower1].top1(), towers[tower1].pop2());
+    towers[tower2].push(towers[tower1].top1(), towers[tower1].top2());
+    towers[tower1].pop1();
     return true;
 }
 
