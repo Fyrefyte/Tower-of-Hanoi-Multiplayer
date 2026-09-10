@@ -1,19 +1,31 @@
 #include "queue.h"
 #include <stdexcept>
+#include <iostream>
 
 template <typename T>
 Queue<T>::Queue() {}
 
 template <typename T>
-T* Queue<T>::dequeue() {
+const T* Queue<T>::dequeue() {
     if (count-- == 0) throw std::underflow_error("Attempted to dequeue empty stack");
-    T* _out = front;
+    Node<T>* _out = front;
     front = front->getNext();
-    return _out;
+    return _out->get();
 }
 
 template <typename T>
 void Queue<T>::enqueue(T* dataPtr) {
-    back->setNext(Node<T>(dataPtr));
+    Node<T> node = Node<T>(dataPtr);
+    if (count == 0) {
+        std::cout << "Adding first item" << std::endl;
+        front = &node;
+        back = &node;
+    }
+    else {
+        std::cout << "Adding new item attached to back" << std::endl;
+        Node<T>* oldBack = back;
+        back = &node;
+        oldBack->setNext(&node);
+    }
     count++;
 }

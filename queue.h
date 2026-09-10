@@ -13,7 +13,7 @@ private:
     Node<T>* next;
 public:
     Node(T* dataPtr, Node<T>* nextPtr = nullptr) : data(dataPtr) { next = nextPtr; }
-    T* get() { return data; }
+    const T* get() { return data; }
     Node<T>* getNext() { return next; }
     void setNext(Node<T>* node) { next = node; }
 };
@@ -30,7 +30,7 @@ private:
 public:
     Queue();
     void enqueue(T* data);
-    T* dequeue();
+    const T* dequeue();
     size_t length() { return count; };
 };
 

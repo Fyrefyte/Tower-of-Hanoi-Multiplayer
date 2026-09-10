@@ -3,6 +3,8 @@
 #include "stack.cpp"
 #include "hanoi.h"
 #include "hanoi.cpp"
+#include "queue.h"
+#include "queue.cpp"
 #include <cstdint>
 #include <limits>
 
@@ -200,7 +202,19 @@ void intro() {
 
 int main()
 {
-    intro();
+    // intro();
+    char a = 'a';
+    char b = 'b';
+    char c = 'c';
+
+    Queue<char> q;
+    cout << q.length();
+    q.enqueue(&a);
+    q.enqueue(&b);
+    q.enqueue(&c);
+    cout << *q.dequeue();
+    cout << *q.dequeue();
+    cout << *q.dequeue();
 
     return 0;
 }
