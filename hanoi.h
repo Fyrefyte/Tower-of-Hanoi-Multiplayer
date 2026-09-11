@@ -4,9 +4,72 @@
 #define HANOI_H
 
 #include "stack.h"
+#include "queue.h"
 #include <sstream>
+#include <limits>
+#include <iostream>
+#include <fstream>
 
 #define CLEAR_CONSOLE std::cout << "\x1b[H\x1b[2J" << std::flush;
+#define CONT_REMINDER "\n(Enter to continue)"
+#define ENTER_TO_CONT(prevInput) std::cout << CONT_REMINDER; \
+                                 std::cin.clear(); \
+                                 if (prevInput) std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); \
+                                 std::cin.get(); \
+                                 CLEAR_CONSOLE; \
+
+template <typename T = size_t>
+class Move
+{
+private:
+    const T from;
+    const T to;
+public:
+    Move(T fromTower, T toTower) : from(fromTower), to(toTower) {}
+    const T getFrom() const { return from; }
+    const T getTo() const { return to; }
+    const std::ostringstream printable() const { return std::ostringstream() << "(" << static_cast<size_t>(from) + 1 << " -> " << static_cast<size_t>(to) + 1 << ")"; }
+};
+
+template <typename T = size_t>
+class MoveSeq
+{
+private:
+    ContainerQueue<Move, T> moves;
+public:
+    MoveSeq() {}
+    void addMove(const T from, const T to) {
+        Move<T>* newMove = new Move<T>(from, to);
+        addMove(newMove);
+    }
+    void addMove(Move<T>* move) {
+        moves.enqueue(move);
+    }
+    const Move<T>* getNextMove() {
+        return moves.dequeue();
+    }
+    size_t movesLeft() { return moves.length(); }
+    void save(const std::string saveSignature) {
+        std::ofstream csvFile("savedSeq" + saveSignature + ".csv");
+        if (!csvFile.is_open()) throw std::runtime_error("New save file with the given signature failed to open: savedSeq" + saveSignature + ".csv");
+        csvFile << "From,To\n";
+        while (moves.length() > 0) {
+            const Move<T>* next = getNextMove();
+            csvFile << next->getFrom() << ',' << next->getTo() << "\n";
+            delete next;
+        }
+    }
+    void load(const std::string saveSignature) {
+        std::ifstream csvFile("savedSeq" + saveSignature + ".csv");
+        if (!csvFile.is_open()) throw std::runtime_error("Save file with the given signature failed to open: savedSeq" + saveSignature + ".csv");
+        std::string line;
+        std::getline(csvFile, line); // Remove header
+        while (std::getline(csvFile, line)) {
+            size_t delimiter = line.find(",");
+            addMove(std::stoull(line.substr(0, delimiter)), std::stoull(line.substr(delimiter + 1)));
+        }
+    }
+};
 
 template <typename T = size_t, T maxSize = 20, T numTowers = 3>
 class Hanoi
@@ -136,6 +199,38 @@ public:
             std::cout << (towers.moveCount - (1LL << towers.size) + 1) << " moves more than optimal." << std::endl;
         }
         // TODO add play again option
+    }
+};
+
+template <typename T = size_t, T maxSize = 20, T numTowers = 3>
+class HanoiAuto
+{
+private:
+    Hanoi<T, maxSize, numTowers> hanoi;
+    MoveSeq<T> moves;
+    size_t currentMove = 0;
+public:
+    HanoiAuto() {}
+    void setMoves(MoveSeq<T> newMoves) { moves = newMoves; }
+    T movesLeft() { return moves.movesLeft(); }
+    friend void showCurrentMove(HanoiAuto<T, maxSize, numTowers>& hanoiAuto, bool prevInput = false) {
+        printTowers(hanoiAuto.hanoi);
+        ENTER_TO_CONT(prevInput);
+    }
+    friend bool playNextMove(HanoiAuto<T, maxSize, numTowers>& hanoiAuto, bool prevInput = false) {
+        if (hanoiAuto.movesLeft() == 0) return false;
+        const Move<T>* move = hanoiAuto.moves.getNextMove();
+        hanoiAuto.hanoi.movePiece(move->getFrom(), move->getTo());
+        printTowers(hanoiAuto.hanoi);
+        hanoiAuto.currentMove++;
+        std::cout << "Move " << hanoiAuto.currentMove << ": " << move->printable().str() << std::endl;
+        ENTER_TO_CONT(prevInput);
+        return true;
+    }
+    friend void showFullMoveset(HanoiAuto<T, maxSize, numTowers>& hanoiAuto, bool prevInput = false) {
+        for (size_t i = 1; hanoiAuto.movesLeft() > 0; i++) {
+            std::cout << i << ". " << hanoiAuto.moves.getNextMove()->printable().str() << std::endl;
+        }
     }
 };
 
