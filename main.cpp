@@ -114,7 +114,15 @@ void help() {
 }
 
 void game() {
-    cout << "Welcome to the Tower of Hanoi!\nSelect number of players:\n(1) 1-Player\n(2) 2-Player\n(4) 4-Player\n(6) 6-Player\n(V) View Saved Solution\n(R) Replay Saved Solution\n\nEnter anything else for help and details" << endl;
+    // \033[4m stuff to underline \033[24m
+    cout << "Welcome to the Tower of Hanoi!\n\n"
+         << "Select number of players:\n"
+         << "(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n\n"
+         << "Or, choose an autoplay mode:\n"
+         << "(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution\n"
+         << "(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n\n"
+         << "Or, enter anything else for help and details\n"
+         << "> " << flush;
     char mode;
     cin >> mode;
     uint8_t size;
