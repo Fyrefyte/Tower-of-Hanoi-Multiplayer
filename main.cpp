@@ -113,23 +113,13 @@ void help() {
     ENTER_TO_CONT(false);
 }
 
-void intro() {
-    // #define NUM_GAMEMODES 2
-    cout << "Welcome to the Tower of Hanoi!\nSelect number of players:\n(1) 1-Player\n(2) 2-Player\n(4) 4-Player\n(6) 6-Player\n(0) View/Replay Solution\n\nEnter anything else for help and details" << endl;
-    uint8_t inp;
-    while (true) {
-        char inpChar;
-        cin >> inpChar;
-        try {
-            inp = static_cast<uint8_t>(inpChar - '0');
-            break;
-            // if (inp >= 1 && inp <= NUM_GAMEMODES) break;
-        }
-        catch (exception e) {}
-    }
+void game() {
+    cout << "Welcome to the Tower of Hanoi!\nSelect number of players:\n(1) 1-Player\n(2) 2-Player\n(4) 4-Player\n(6) 6-Player\n(V) View Saved Solution\n(R) Replay Saved Solution\n\nEnter anything else for help and details" << endl;
+    char mode;
+    cin >> mode;
     uint8_t size;
     bool pattern;
-    if (inp == 0 || inp == 1 || inp == 2 || inp == 4 || inp == 6) {
+    if (mode == '1' || mode == '2' || mode == '4' || mode == '6' || mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v') {
         cout << "What size of towers do you want? (min 3, max 20)" << endl;
         while (true) {
             string inpString;
@@ -140,7 +130,7 @@ void intro() {
             }
             catch (exception e) {}
         }
-        if (inp > 1) {
+        if (mode == '2' || mode == '4' || mode == '6') {
             cout << "Would you rather have:\n(1) Patterned disks (like |////|) or\n(2) Numbered disks (like |1111|)?" << endl;
             while (true) {
                 char inpChar;
@@ -150,39 +140,61 @@ void intro() {
                         pattern = inpChar == '1';
                         break;
                     }
-                }
-                catch (exception e) {}
+                } catch (exception e) {}
             }
         }
     }
-    switch (inp) {
-        case 0: {
+    switch (mode) {
+        case 'v':
+        case 'V': {
             MoveSeq<uint8_t> seq;
-            seq.load(to_string(size));
-            HanoiAuto<uint8_t> hanoiAuto;
-            hanoiAuto.setMoves(seq);
+            try {
+                seq.load(to_string(size));
+                HanoiAuto<uint8_t> hanoiAuto = HanoiAuto<uint8_t>(size);
+                hanoiAuto.setMoves(seq);
+                CLEAR_CONSOLE
+                showFullMoveset(hanoiAuto, true);
+            } catch (exception e) {
+                cout << "No solution has been saved for this tower size" << endl;
+            }
+            break;
         }
-        case 1: {
+        case 'r':
+        case 'R': {
             MoveSeq<uint8_t> seq;
-            Hanoi<uint8_t> hanoi = Hanoi<uint8_t>(size);
+            try {
+                seq.load(to_string(size));
+                HanoiAuto<uint8_t> hanoiAuto = HanoiAuto<uint8_t>(size);
+                hanoiAuto.setMoves(seq);
+                CLEAR_CONSOLE
+                showCurrentMove(hanoiAuto);
+                while (playNextMove(hanoiAuto));
+            } catch (exception e) {
+                cout << "No solution has been saved for this tower size" << endl;
+            }
+            break;
+        }
+        case '1': {
+            MoveSeq<uint8_t> seq;
+            Hanoi<uint8_t> hanoi = Hanoi<uint8_t>(&seq, size);
             gameLoop(hanoi);
             break;
         }
-        case 2: {
+        case '2': {
             uint8_t startTowers[2] = {0, 4};
             uint8_t goalTowers[2][2] = {{3, 4}, {0, 1}};
             HanoiMultiplayer<uint8_t> hanoi = HanoiMultiplayer<uint8_t>(size, startTowers, goalTowers, pattern);
             gameLoop(hanoi);
             break;
         }
-        case 4: {
+        case '4': {
             uint8_t startTowers[4] = {0, 2, 6, 8};
             uint8_t goalTowers[4][2] = {{5, 6}, {7, 8}, {2, 3}, {0, 1}};
             HanoiMultiplayer<uint8_t, 20, 9, 4> hanoi = HanoiMultiplayer<uint8_t, 20, 9, 4>(size, startTowers, goalTowers, pattern);
             gameLoop(hanoi);
             break;
         }
-        case 6: {
+        case '6': {
             uint8_t startTowers[6] = {0, 2, 4, 8, 10, 12};
             uint8_t goalTowers[6][2] = {{7, 8}, {11, 12}, {9, 10}, {4, 5}, {2, 3}, {0, 1}};
             HanoiMultiplayer<uint8_t, 20, 13, 6> hanoi = HanoiMultiplayer<uint8_t, 20, 13, 6>(size, startTowers, goalTowers, pattern);
@@ -197,21 +209,14 @@ void intro() {
 
 int main()
 {
-    intro();
-
-    // MoveSeq seq;
-    // seq.addMove(0, 1);
-    // seq.addMove(1, 2);
-    // seq.addMove(0, 4);
-
-    // seq.save("Test");
-
-    // seq.load("Test");
-
-    // HanoiAuto aut;
-    // aut.setMoves(seq);
-
-    // while (playNextMove(aut));
+    do {
+        CLEAR_CONSOLE
+        game();
+        cout << "Go again (y/n)? ";
+        char cont;
+        cin >> cont;
+        if (!CONFIRM_COND(cont)) break;
+    } while (true);
 
     return 0;
 }

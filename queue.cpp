@@ -26,3 +26,8 @@ void Queue<T>::enqueue(T* dataPtr) {
     }
     count++;
 }
+
+template <typename T>
+void Queue<T>::clear() {
+    while (count > 0) dequeue();
+}

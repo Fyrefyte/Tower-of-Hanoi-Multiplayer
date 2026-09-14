@@ -5,10 +5,25 @@
 #include <algorithm>
 
 template <typename T, T maxSize, T numTowers>
-Hanoi<T, maxSize, numTowers>::Hanoi(T towerSize, T goalTower) {
+Hanoi<T, maxSize, numTowers>::Hanoi(T towerSize, T goalTower) : useSeq(false) {
     static_assert(std::is_arithmetic_v<T>, "Typename T must be numeric");
     size = towerSize;
     goal = goalTower;
+    for (T i = 0; i < size; i++) {
+        pieces[i] = i + 1;
+    }
+    for (T i = 0; i < numTowers; i++) {
+        towers[i] = Stack<T, maxSize>();
+    }
+    reset();
+}
+
+template <typename T, T maxSize, T numTowers>
+Hanoi<T, maxSize, numTowers>::Hanoi(MoveSeq<T>* outSeq, T towerSize, T goalTower) : useSeq(true) {
+    static_assert(std::is_arithmetic_v<T>, "Typename T must be numeric");
+    size = towerSize;
+    goal = goalTower;
+    moveSeq = outSeq;
     for (T i = 0; i < size; i++) {
         pieces[i] = i + 1;
     }
@@ -132,6 +147,7 @@ T HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::checkWin() {
 template <typename T, T maxSize, T numTowers>
 bool Hanoi<T, maxSize, numTowers>::movePiece(T tower1, T tower2) {
     if (!canMove(tower1, tower2)) return false;
+    if (useSeq) moveSeq->addMove(tower1, tower2);
     towers[tower2].push(towers[tower1].pop());
     moveCount++;
     return true;
@@ -154,6 +170,7 @@ void Hanoi<T, maxSize, numTowers>::reset() {
     for (T i = size; i > 0; i--) {
         towers[0].push(&pieces[i-1]);
     }
+    if (useSeq) moveSeq->clear();
 }
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>

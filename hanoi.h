@@ -9,6 +9,9 @@
 #include <limits>
 #include <iostream>
 #include <fstream>
+#include <iostream>
+
+#include <charconv>
 
 #define CLEAR_CONSOLE std::cout << "\x1b[H\x1b[2J" << std::flush;
 #define CONT_REMINDER "\n(Enter to continue)"
@@ -16,7 +19,22 @@
                                  std::cin.clear(); \
                                  if (prevInput) std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); \
                                  std::cin.get(); \
-                                 CLEAR_CONSOLE; \
+                                 CLEAR_CONSOLE;
+#define CONFIRM_COND(inp) (inp == 't' || inp == 'T' || inp == 'y' || inp == 'Y' || inp == '1')
+
+template <typename T>
+T stringToNumericFast(std::string_view str) {
+    T result;
+    // std::from_chars takes a raw pointer range
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
+
+    // Check if the conversion succeeded and consumed the entire string
+    if (ec == std::errc{} && ptr == str.data() + str.size()) {
+        return result;
+    }
+
+    return -1; // Conversion failed or partial match
+}
 
 template <typename T = size_t>
 class Move
@@ -48,6 +66,9 @@ public:
     const Move<T>* getNextMove() {
         return moves.dequeue();
     }
+    void clear() {
+        moves.clear();
+    }
     size_t movesLeft() { return moves.length(); }
     void save(const std::string saveSignature) {
         std::ofstream csvFile("savedSeq" + saveSignature + ".csv");
@@ -55,7 +76,7 @@ public:
         csvFile << "From,To\n";
         while (moves.length() > 0) {
             const Move<T>* next = getNextMove();
-            csvFile << next->getFrom() << ',' << next->getTo() << "\n";
+            csvFile << static_cast<size_t>(next->getFrom()) << ',' << static_cast<size_t>(next->getTo()) << "\n";
             delete next;
         }
     }
@@ -66,7 +87,7 @@ public:
         std::getline(csvFile, line); // Remove header
         while (std::getline(csvFile, line)) {
             size_t delimiter = line.find(",");
-            addMove(std::stoull(line.substr(0, delimiter)), std::stoull(line.substr(delimiter + 1)));
+            addMove(stringToNumericFast<T>(line.substr(0, delimiter)), stringToNumericFast<T>(line.substr(delimiter + 1)));
         }
     }
 };
@@ -77,12 +98,15 @@ class Hanoi
 private:
     T size;
     Stack<T, maxSize> towers[numTowers];
+    const bool useSeq;
+    MoveSeq<T>* moveSeq;
     T pieces[maxSize];
     T goal;
     const T towerCount = numTowers;
     size_t moveCount = 0;
 public:
     Hanoi(T = 5, T = 2);
+    Hanoi(MoveSeq<T>*, T = 5, T = 2);
     bool canMoveFrom(T);
     bool canMoveTo(T);
     bool canMove(T, T);
@@ -198,6 +222,16 @@ public:
         else {
             std::cout << (towers.moveCount - (1LL << towers.size) + 1) << " moves more than optimal." << std::endl;
         }
+        if (towers.useSeq) {
+            std::cout << "Save this sequence (y/n)? ";
+            char inpChar;
+            std::cin >> inpChar;
+            if (CONFIRM_COND(inpChar)) {
+                std::string fileString = std::to_string(static_cast<unsigned int>(towers.size));
+                std::cout << "Saved to " << fileString << std::endl;
+                towers.moveSeq->save(fileString);
+            }
+        }
         // TODO add play again option
     }
 };
@@ -210,7 +244,7 @@ private:
     MoveSeq<T> moves;
     size_t currentMove = 0;
 public:
-    HanoiAuto() {}
+    HanoiAuto(T size = 5, T goalTower = 2) : hanoi(size, goalTower) {}
     void setMoves(MoveSeq<T> newMoves) { moves = newMoves; }
     T movesLeft() { return moves.movesLeft(); }
     friend void showCurrentMove(HanoiAuto<T, maxSize, numTowers>& hanoiAuto, bool prevInput = false) {

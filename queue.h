@@ -32,6 +32,7 @@ public:
     Queue() {}
     void enqueue(T*);
     const T* dequeue();
+    void clear();
     size_t length() { return count; }
 };
 
@@ -46,6 +47,7 @@ public:
     ContainerQueue() {}
     void enqueue(Container<T>*);
     const Container<T>* dequeue();
+    void clear();
     size_t length() { return count; }
 };
 
@@ -73,6 +75,11 @@ void ContainerQueue<Container, T>::enqueue(Container<T>* dataPtr) {
         oldBack->setNext(node);
     }
     count++;
+}
+
+template <template <typename> class Container, typename T>
+void ContainerQueue<Container, T>::clear() {
+    while (count > 0) dequeue();
 }
 
 // TODO make this work
