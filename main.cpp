@@ -74,6 +74,29 @@ public:
     }
 };
 
+#define RESET       "\033[0m"
+#define RED         "\033[31m"
+#define GREEN       "\033[32m"
+#define YELLOW      "\033[33m"
+#define BLUE        "\033[34m"
+#define MAGENTA     "\033[35m"
+#define CYAN        "\033[36m"
+#define BOLD        "\033[1m"
+#define ITALIC      "\033[3m"
+#define UNDERLINE   "\033[4m"
+
+template <typename... Args>
+void print(string str, Args... modifiers) {
+    ((cout << modifiers), ...);
+    cout << str << RESET << flush;
+}
+
+template <typename... Args>
+void println(string str, Args... modifiers) {
+    ((cout << modifiers), ...);
+    cout << str << RESET << endl;
+}
+
 void help() {
 #define EXAMPLE_TOWERS "\n   _[]_        []         []\n  |____|       []         []\n |______|      []         []\n|________|     []         []"
 #define EXAMPLE_WIN "\n    []         []        _[]_\n    []     ----[]--->   |____|\n    []         []      |______|\n    []         []     |________|"
@@ -114,15 +137,22 @@ void help() {
 }
 
 void game() {
-    // \033[4m stuff to underline \033[24m
-    cout << "Welcome to the Tower of Hanoi!\n\n"
-         << "Select number of players:\n"
-         << "(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n\n"
-         << "Or, choose an autoplay mode:\n"
-         << "(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution\n"
-         << "(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n\n"
-         << "Or, enter anything else for help and details\n"
-         << "> " << flush;
+    println("Welcome to the Tower of Hanoi!", RED, BOLD);
+    println("Enter anything not listed below for help and details\n", RED);
+    println("Select number of players:", BLUE, BOLD);
+    println("(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n", BLUE);
+    println("Or, choose an autoplay mode:", GREEN, BOLD);
+    println("(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution", GREEN);
+    println("(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n", GREEN);
+    print("> ");
+    // cout << "Welcome to the Tower of Hanoi!\n\n"
+    //      << "Select number of players:\n"
+    //      << "(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n\n"
+    //      << "Or, choose an autoplay mode:\n"
+    //      << "(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution\n"
+    //      << "(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n\n"
+    //      << "Or, enter anything else for help and details\n"
+    //      << "> " << flush;
     char mode;
     cin >> mode;
     uint8_t size;
