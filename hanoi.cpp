@@ -188,9 +188,10 @@ std::ostringstream Hanoi<T, maxSize, numTowers>::computeSegment(const T thisLaye
     #define V_LINE_CHAR '|'
     #define POLE_STR "[]"
     #define POLE_CAP_STR "[]"
+    #define THICKNESS BOLD
 
     std::ostringstream out;
-    out << BOLD;
+    out << THICKNESS;
 
     if (thisLayerWidth == 0 && belowLayerWidth == 0) {
         // Spacing layer
@@ -235,10 +236,13 @@ char HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::getPlayerCha
     switch (player) {
         case static_cast<T>(0): return '_';
         case static_cast<T>(1): return '/';
-        case static_cast<T>(2): return 'L';
-        case static_cast<T>(3): return '#';
-        case static_cast<T>(4): return '+';
+        case static_cast<T>(2): return '\\';
+        case static_cast<T>(3): return '|';
+        case static_cast<T>(4): return '<';
         case static_cast<T>(5): return '>';
+        case static_cast<T>(6): return '-';
+        case static_cast<T>(7): return '+';
+        case static_cast<T>(8): return '=';
         default: return '?';
     }
 }
@@ -264,21 +268,22 @@ std::ostringstream HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>
     #define V_LINE_CHAR '|'
     #define POLE_STR "[]"
     #define POLE_CAP_STR "[]"
+    #define THICKNESS BOLD
 
     std::ostringstream out;
 
     if (thisLayerWidth == 0 && belowLayerWidth == 0) {
         // Spacing layer
         out << std::string(size + 1, SPACE_CHAR)                                 // Space to the left of the pole
-            << BOLD << POLE_STR << RESET                                         // Pole
+            << THICKNESS << POLE_STR << RESET                                    // Pole
             << std::string(size + 1, SPACE_CHAR);                                // Space to the right of the pole
     }
     else if (thisLayerWidth == 0 && belowLayerWidth != 0) {
         // Cap layer
         out << std::string(size - belowLayerWidth + 1, SPACE_CHAR)               // Space to the left of the cap
-            << BOLD << belowLayerColor                                           // Color start
+            << THICKNESS << belowLayerColor                                      // Color start
             << std::string(belowLayerWidth, H_LINE_CHAR)                         // Left cap
-            << RESET << BOLD                                                     // Color end
+            << RESET << THICKNESS                                                // Color end
             << POLE_CAP_STR                                                      // The pole connecting to the other bits
             << belowLayerColor                                                   // Color start
             << std::string(belowLayerWidth, H_LINE_CHAR)                         // Right cap
@@ -288,9 +293,9 @@ std::ostringstream HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>
     else if (thisLayerWidth + 1 >= belowLayerWidth) {
         // Normal layer
         out << std::string(size - thisLayerWidth, SPACE_CHAR)                    // Space to the left of the left wall
-            << BOLD << thisLayerColor                                            // Color start
+            << THICKNESS << thisLayerColor                                       // Color start
             << std::string(1, V_LINE_CHAR)                                       // Left wall
-            << std::string(MIDDLE_SPACING + thisLayerWidth*2, playerChar)        // The inner bottom surface (defined by player)
+            << UNDERLINE << std::string(MIDDLE_SPACING + thisLayerWidth*2, playerChar) << END_UNDERLINE // The inner bottom surface (defined by player)
             << std::string(1, V_LINE_CHAR)                                       // Right wall
             << RESET                                                             // Color end
             << std::string(size - thisLayerWidth, SPACE_CHAR);                   // Space to the right of the right wall
@@ -298,11 +303,11 @@ std::ostringstream HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>
     else {
         // Layer with skirt
         out << std::string(size - belowLayerWidth + 1, SPACE_CHAR)               // Space to the left of the skirt
-            << BOLD << belowLayerColor                                           // Color start (lower)
+            << THICKNESS << belowLayerColor                                      // Color start (lower)
             << std::string(belowLayerWidth - thisLayerWidth - 1, H_LINE_CHAR)    // Left skirt
             << thisLayerColor                                                    // Color start (upper)
             << std::string(1, V_LINE_CHAR)                                       // Left wall
-            << std::string(MIDDLE_SPACING + thisLayerWidth*2, playerChar)        // The inner bottom surface (defined by player)
+            << UNDERLINE << std::string(MIDDLE_SPACING + thisLayerWidth*2, playerChar) << END_UNDERLINE // The inner bottom surface (defined by player)
             << std::string(1, V_LINE_CHAR)                                       // Right wall
             << belowLayerColor                                                   // Color start (lower)
             << std::string(belowLayerWidth - thisLayerWidth - 1, H_LINE_CHAR)    // Right skirt

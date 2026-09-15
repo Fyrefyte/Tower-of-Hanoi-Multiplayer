@@ -30,8 +30,11 @@
 #define MAGENTA     "\033[35m"
 #define CYAN        "\033[36m"
 #define BOLD        "\033[1m"
+#define END_BOLD    "\033[21m"
 #define ITALIC      "\033[3m"
+#define END_ITALIC  "\033[23m"
 #define UNDERLINE   "\033[4m"
+#define END_UNDERLINE "\033[24m"
 
 template <typename T>
 T stringToNumericFast(std::string_view str) {
@@ -368,8 +371,8 @@ public:
         std::cout << towers.getPlayerColor(towers.turn) << "Player " << static_cast<size_t>(towers.turn)+1 << "'s turn" << RESET;
         if (towers.moveCount < numPlayers) {
             if (towers.diskMode == 0)
-                std::cout << std::string(15, ' ') << "____" << std::endl << "(Your pieces look like this: |"
-                          << std::string(4, towers.getPlayerChar(towers.turn)) << "|)" << std::endl;
+                std::cout << std::string(15, ' ') << "____" << std::endl << "(Your pieces look like this: |" << UNDERLINE
+                          << std::string(4, towers.getPlayerChar(towers.turn)) << END_UNDERLINE << "|)" << std::endl;
         }
     }
 
@@ -378,7 +381,7 @@ public:
 #define TOWER_AT2(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at2(x) : -1)
 #define TOWER_SEPARATION " ";
 #define PLAYER_CHAR(tower, x) towers.diskMode == 0 ? getPlayerChar(TOWER_AT2(tower, x)) : (towers.diskMode == 1 ? static_cast<size_t>(TOWER_AT2(tower, x)) + '1' : '_')
-#define PLAYER_COLOR(tower, x) towers.diskMode == 2 ? getPlayerColor(TOWER_AT2(tower, x)) : ""
+#define PLAYER_COLOR(tower, x) getPlayerColor(TOWER_AT2(tower, x))
 
         std::ostringstream stream;
 
@@ -417,7 +420,7 @@ public:
         for (T i = 0; i < towers.towerCount; i++) {
             std::cout << std::string(towers.size + 1, ' ');
             T goal = towers.goalAt(i);
-            if (goal != static_cast<T>(-1)) std::cout << static_cast<size_t>(goal + 1) << '^';
+            if (goal != static_cast<T>(-1)) std::cout << getPlayerColor(goal) << static_cast<size_t>(goal + 1) << '^' << RESET;
             else std::cout << "  ";
             std::cout << std::string(towers.size + 1, ' ') << TOWER_SEPARATION;
         }

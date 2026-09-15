@@ -146,6 +146,8 @@ void game() {
     println("Or, choose an autoplay mode:", GREEN, BOLD);
     println("(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution", GREEN);
     println("(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n", GREEN);
+    println("Or, check out an experiment:", YELLOW, BOLD);
+    println("(B) \033[4mB\033[24micolor Hanoi\n", YELLOW);
     print("> ");
     char mode;
     cin >> mode;
@@ -155,7 +157,8 @@ void game() {
         mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v' ||
         mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p') {
         CLEAR_CONSOLE
-        println("Enter tower size (min 3, max 20)", BOLD);
+        print("Enter tower size", BOLD);
+        println(" (min 3, max 20)");
         print("> ");
         while (true) {
             string inpString;
@@ -167,18 +170,61 @@ void game() {
             catch (exception e) {}
         }
         if (mode == '2' || mode == '4' || mode == '6') {
-            print("Would you rather have:\n(1) Patterned disks (like |////|) or\n(2) Numbered disks (like |1111|) or\n(3) Colored disks (like ");
-            print("|____|", BLUE);
-            println(")?");
-            while (true) {
-                char inpChar;
-                cin >> inpChar;
-                try {
-                    if (inpChar == '1' || inpChar == '2' || inpChar == '3') {
-                        pattern = inpChar - '1';
-                        break;
-                    }
-                } catch (exception e) {}
+            print("\nColors? ", BOLD);
+            print("(y/n) ");
+            char inp;
+            cin >> inp;
+            bool colors = CONFIRM_COND(inp);
+            if (colors) {
+                print("Choose disk patterns:   ");
+                print("_", BLUE);
+                print("[]");
+                println("_", BLUE);
+                print("(1) Patterned disks -> ");
+                print("|", BLUE);
+                print("////", BLUE, UNDERLINE);
+                println("|", BLUE);
+                print("(2) Numbered disks -> ");
+                print("|", BLUE);
+                print("222222", BLUE, UNDERLINE);
+                println("|", BLUE);
+                print("(3) Plain disks ---> ");
+                print("|", BLUE);
+                print("________", BLUE, UNDERLINE);
+                println("|", BLUE);
+                print("> ");
+                while (true) {
+                    char inpChar;
+                    cin >> inpChar;
+                    try {
+                        if (inpChar == '1' || inpChar == '2' || inpChar == '3') {
+                            pattern = inpChar - '1';
+                            break;
+                        }
+                    } catch (exception e) {}
+                }
+            }
+            else {
+                print("Choose disk patterns:   ");
+                println("_[]_");
+                print("(1) Patterned disks -> ");
+                print("|");
+                print("////", UNDERLINE);
+                println("|");
+                print("(2) Numbered disks -> ");
+                print("|");
+                print("222222", UNDERLINE);
+                print("|\n> ");
+                while (true) {
+                    char inpChar;
+                    cin >> inpChar;
+                    try {
+                        if (inpChar == '1' || inpChar == '2') {
+                            pattern = inpChar - '1';
+                            break;
+                        }
+                    } catch (exception e) {}
+                }
             }
         }
     }
