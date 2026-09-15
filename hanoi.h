@@ -81,7 +81,7 @@ public:
         moves.clear();
     }
     size_t movesLeft() { return moves.length(); }
-    void save(const std::string saveSignature) {
+    std::string save(const std::string saveSignature) {
         std::ofstream csvFile("savedSeq" + saveSignature + ".csv");
         if (!csvFile.is_open()) throw std::runtime_error("New save file with the given signature failed to open: savedSeq" + saveSignature + ".csv");
         csvFile << "From,To\n";
@@ -90,6 +90,7 @@ public:
             csvFile << static_cast<size_t>(next->getFrom()) << ',' << static_cast<size_t>(next->getTo()) << "\n";
             delete next;
         }
+        return "savedSeq" + saveSignature + ".csv";
     }
     void load(const std::string saveSignature) {
         std::ifstream csvFile("savedSeq" + saveSignature + ".csv");
@@ -239,8 +240,7 @@ public:
             std::cin >> inpChar;
             if (CONFIRM_COND(inpChar)) {
                 std::string fileString = std::to_string(static_cast<unsigned int>(towers.size));
-                std::cout << "Saved to " << fileString << std::endl;
-                towers.moveSeq->save(fileString);
+                std::cout << "Saved to " << towers.moveSeq->save(fileString) << std::endl;
             }
         }
     }

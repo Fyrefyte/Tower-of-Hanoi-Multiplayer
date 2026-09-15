@@ -190,6 +190,7 @@ std::ostringstream Hanoi<T, maxSize, numTowers>::computeSegment(const T thisLaye
     #define POLE_CAP_STR "[]"
 
     std::ostringstream out;
+    out << BOLD;
 
     if (thisLayerWidth == 0 && belowLayerWidth == 0) {
         // Spacing layer
@@ -223,6 +224,8 @@ std::ostringstream Hanoi<T, maxSize, numTowers>::computeSegment(const T thisLaye
             << std::string(belowLayerWidth - thisLayerWidth - 1, H_LINE_CHAR)    // Right skirt
             << std::string(size - belowLayerWidth + 1, SPACE_CHAR);              // Space to the right of the skirt
     }
+
+    out << RESET;
 
     return out;
 }

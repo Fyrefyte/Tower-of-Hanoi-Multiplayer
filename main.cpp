@@ -155,7 +155,8 @@ void game() {
         mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v' ||
         mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p') {
         CLEAR_CONSOLE
-        print("Enter tower size (min 3, max 20): ", BLUE, BOLD);
+        println("Enter tower size (min 3, max 20)", BOLD);
+        print("> ");
         while (true) {
             string inpString;
             getline(cin, inpString);
