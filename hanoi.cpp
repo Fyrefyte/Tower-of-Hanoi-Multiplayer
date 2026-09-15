@@ -34,21 +34,13 @@ Hanoi<T, maxSize, numTowers>::Hanoi(MoveSeq<T>* outSeq, T towerSize, T goalTower
 }
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
-HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(T towerSize, T (&startTowers)[numPlayers], T (&goalTowers)[numPlayers][numGoals], bool patterned) {
+HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(T towerSize, T (&startTowers)[numPlayers], T (&goalTowers)[numPlayers][numGoals], uint8_t mode): diskMode(mode), size(towerSize) {
     static_assert(std::is_arithmetic_v<T>, "Typename T must be numeric");
-    size = towerSize;
-    pattern = patterned;
     for (T i = 0; i < numPlayers; i++) std::copy(goalTowers[i], goalTowers[i] + numPlayers, goals[i]);
     std::copy(startTowers, startTowers + numPlayers, starts);
-    for (T i = 0; i < size; i++) {
-        pieces[i] = i + 1;
-    }
-    for (T i = 0; i < numTowers; i++) {
-        towers[i] = StackPaired<T, T, maxSize>();
-    }
-    for (T i = 0; i < numPlayers; i++) {
-        players[i] = i;
-    }
+    for (T i = 0; i < size; i++) pieces[i] = i + 1;
+    for (T i = 0; i < numTowers; i++) towers[i] = StackPaired<T, T, maxSize>();
+    for (T i = 0; i < numPlayers; i++) players[i] = i;
     reset();
 }
 
@@ -249,7 +241,20 @@ char HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::getPlayerCha
 }
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
-std::ostringstream HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::computeSegment(const T thisLayerWidth, const T belowLayerWidth, const char playerChar) {
+std::string HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::getPlayerColor(const T player) {
+    switch (player) {
+        case static_cast<T>(0): return RED;
+        case static_cast<T>(1): return BLUE;
+        case static_cast<T>(2): return GREEN;
+        case static_cast<T>(3): return YELLOW;
+        case static_cast<T>(4): return MAGENTA;
+        case static_cast<T>(5): return CYAN;
+        default: return "";
+    }
+}
+
+template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
+std::ostringstream HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::computeSegment(const T thisLayerWidth, const T belowLayerWidth, const char playerChar, const std::string thisLayerColor, const std::string belowLayerColor) {
     #define MIDDLE_SPACING 2
     #define SPACE_CHAR ' '
     #define H_LINE_CHAR '_'
@@ -262,33 +267,43 @@ std::ostringstream HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>
     if (thisLayerWidth == 0 && belowLayerWidth == 0) {
         // Spacing layer
         out << std::string(size + 1, SPACE_CHAR)                                 // Space to the left of the pole
-            << POLE_STR                                                          // Pole
+            << BOLD << POLE_STR << RESET                                         // Pole
             << std::string(size + 1, SPACE_CHAR);                                // Space to the right of the pole
     }
     else if (thisLayerWidth == 0 && belowLayerWidth != 0) {
         // Cap layer
         out << std::string(size - belowLayerWidth + 1, SPACE_CHAR)               // Space to the left of the cap
+            << BOLD << belowLayerColor                                           // Color start
             << std::string(belowLayerWidth, H_LINE_CHAR)                         // Left cap
+            << RESET << BOLD                                                     // Color end
             << POLE_CAP_STR                                                      // The pole connecting to the other bits
+            << belowLayerColor                                                   // Color start
             << std::string(belowLayerWidth, H_LINE_CHAR)                         // Right cap
+            << RESET                                                             // Color end
             << std::string(size - belowLayerWidth + 1, SPACE_CHAR);              // Space to the right of the cap
     }
     else if (thisLayerWidth + 1 >= belowLayerWidth) {
         // Normal layer
         out << std::string(size - thisLayerWidth, SPACE_CHAR)                    // Space to the left of the left wall
+            << BOLD << thisLayerColor                                            // Color start
             << std::string(1, V_LINE_CHAR)                                       // Left wall
             << std::string(MIDDLE_SPACING + thisLayerWidth*2, playerChar)        // The inner bottom surface (defined by player)
             << std::string(1, V_LINE_CHAR)                                       // Right wall
+            << RESET                                                             // Color end
             << std::string(size - thisLayerWidth, SPACE_CHAR);                   // Space to the right of the right wall
     }
     else {
         // Layer with skirt
         out << std::string(size - belowLayerWidth + 1, SPACE_CHAR)               // Space to the left of the skirt
+            << BOLD << belowLayerColor                                           // Color start (lower)
             << std::string(belowLayerWidth - thisLayerWidth - 1, H_LINE_CHAR)    // Left skirt
+            << thisLayerColor                                                    // Color start (upper)
             << std::string(1, V_LINE_CHAR)                                       // Left wall
             << std::string(MIDDLE_SPACING + thisLayerWidth*2, playerChar)        // The inner bottom surface (defined by player)
             << std::string(1, V_LINE_CHAR)                                       // Right wall
+            << belowLayerColor                                                   // Color start (lower)
             << std::string(belowLayerWidth - thisLayerWidth - 1, H_LINE_CHAR)    // Right skirt
+            << RESET                                                             // Color end
             << std::string(size - belowLayerWidth + 1, SPACE_CHAR);              // Space to the right of the skirt
     }
 

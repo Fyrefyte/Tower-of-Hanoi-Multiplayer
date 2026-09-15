@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <iostream>
+#include <cstdint>
 
 #include <charconv>
 
@@ -21,6 +22,16 @@
                                  std::cin.get(); \
                                  CLEAR_CONSOLE;
 #define CONFIRM_COND(inp) (inp == 't' || inp == 'T' || inp == 'y' || inp == 'Y' || inp == '1')
+#define RESET       "\033[0m"
+#define RED         "\033[31m"
+#define GREEN       "\033[32m"
+#define YELLOW      "\033[33m"
+#define BLUE        "\033[34m"
+#define MAGENTA     "\033[35m"
+#define CYAN        "\033[36m"
+#define BOLD        "\033[1m"
+#define ITALIC      "\033[3m"
+#define UNDERLINE   "\033[4m"
 
 template <typename T>
 T stringToNumericFast(std::string_view str) {
@@ -272,18 +283,18 @@ template <typename T = size_t, T maxSize = 20, T numTowers = 5, T numPlayers = 2
 class HanoiMultiplayer
 {
 private:
-    T size;
+    const T size;
+    const T towerCount = numTowers;
+    const uint8_t diskMode;
     StackPaired<T, T, maxSize> towers[numTowers];
     T pieces[maxSize];
     T players[numPlayers];
     T goals[numPlayers][numGoals];
     T starts[numPlayers];
-    const T towerCount = numTowers;
     T turn = 0;
     size_t moveCount = 0;
-    bool pattern;
 public:
-    HanoiMultiplayer(T, T(&)[numPlayers], T(&)[numPlayers][numGoals], bool patterned = true);
+    HanoiMultiplayer(T, T(&)[numPlayers], T(&)[numPlayers][numGoals], uint8_t = 0);
     bool canMoveFrom(T);
     bool canMoveTo(T);
     bool canMove(T, T);
@@ -293,18 +304,24 @@ public:
     bool movePiece(T, T);
     void reset();
     static char getPlayerChar(const T);
-    std::ostringstream computeSegment(const T, const T, const char);
+    static std::string getPlayerColor(const T);
+    std::ostringstream computeSegment(const T, const T, const char, const std::string = "", const std::string = "");
 
     friend void printTurn(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        std::cout << "Player " << static_cast<size_t>(towers.turn)+1 << "'s turn";
-        if (towers.pattern && towers.moveCount < numPlayers) std::cout << std::string(15, ' ') << "____" << std::endl << "(Your pieces look like this: |" << std::string(4, towers.getPlayerChar(towers.turn)) << "|)" << std::endl;
+        std::cout << towers.getPlayerColor(towers.turn) << "Player " << static_cast<size_t>(towers.turn)+1 << "'s turn" << RESET;
+        if (towers.moveCount < numPlayers) {
+            if (towers.diskMode == 0)
+                std::cout << std::string(15, ' ') << "____" << std::endl << "(Your pieces look like this: |"
+                          << std::string(4, towers.getPlayerChar(towers.turn)) << "|)" << std::endl;
+        }
     }
 
     friend void printTowers(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
 #define TOWER_AT1(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at1(x) : 0)
 #define TOWER_AT2(tower, x) (x < towers.towers[tower].length() ? *towers.towers[tower].at2(x) : -1)
 #define TOWER_SEPARATION " ";
-#define PLAYER_CHAR(tower, x) towers.pattern ? getPlayerChar(TOWER_AT2(tower, x)) : static_cast<size_t>(TOWER_AT2(tower, x)) + '1'
+#define PLAYER_CHAR(tower, x) towers.diskMode == 0 ? getPlayerChar(TOWER_AT2(tower, x)) : (towers.diskMode == 1 ? static_cast<size_t>(TOWER_AT2(tower, x)) + '1' : '_')
+#define PLAYER_COLOR(tower, x) towers.diskMode == 2 ? getPlayerColor(TOWER_AT2(tower, x)) : ""
 
         std::ostringstream stream;
 
@@ -321,21 +338,21 @@ public:
         // Top layer
         std::cout << TOWER_SEPARATION;
         for (T i = 0; i < towers.towerCount; i++)
-            std::cout << towers.computeSegment(0, TOWER_AT1(i, towers.size - 1), PLAYER_CHAR(i, towers.size - 1)).str() << TOWER_SEPARATION;
+            std::cout << towers.computeSegment(0, TOWER_AT1(i, towers.size - 1), PLAYER_CHAR(i, towers.size - 1), "", PLAYER_COLOR(i, towers.size - 1)).str() << TOWER_SEPARATION;
         std::cout << std::endl;
 
         // Middle layers
         for (T i = towers.size - 1; i > 0; i--) {
             std::cout << TOWER_SEPARATION;
             for (T j = 0; j < towers.towerCount; j++)
-                std::cout << towers.computeSegment(TOWER_AT1(j, i), TOWER_AT1(j, i-1), PLAYER_CHAR(j, i)).str() << TOWER_SEPARATION;
+                std::cout << towers.computeSegment(TOWER_AT1(j, i), TOWER_AT1(j, i-1), PLAYER_CHAR(j, i), PLAYER_COLOR(j, i), PLAYER_COLOR(j, i-1)).str() << TOWER_SEPARATION;
             std::cout << std::endl;
         }
 
         // Bottom layer
         std::cout << TOWER_SEPARATION;
         for (T i = 0; i < towers.towerCount; i++)
-            std::cout << towers.computeSegment(TOWER_AT1(i, 0), 0, PLAYER_CHAR(i, 0)).str() << TOWER_SEPARATION;
+            std::cout << towers.computeSegment(TOWER_AT1(i, 0), 0, PLAYER_CHAR(i, 0), PLAYER_COLOR(i, 0), "").str() << TOWER_SEPARATION;
         std::cout << std::endl;
 
         // Goal indicators

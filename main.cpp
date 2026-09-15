@@ -138,7 +138,7 @@ void help() {
 
 void game() {
     println("Welcome to the Tower of Hanoi!", RED, BOLD);
-    println("Enter anything not listed below for help and details\n", RED);
+    println("Created by Leo Canales\nEnter anything not listed below for help and details\n", RED);
     println("Select number of players:", BLUE, BOLD);
     println("(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n", BLUE);
     println("Or, choose an autoplay mode:", GREEN, BOLD);
@@ -156,8 +156,10 @@ void game() {
     char mode;
     cin >> mode;
     uint8_t size;
-    bool pattern;
-    if (mode == '1' || mode == '2' || mode == '4' || mode == '6' || mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v') {
+    uint8_t pattern;
+    if (mode == '1' || mode == '2' || mode == '4' || mode == '6' ||
+        mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v' ||
+        mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p') {
         cout << "What size of towers do you want? (min 3, max 20)" << endl;
         while (true) {
             string inpString;
@@ -169,13 +171,15 @@ void game() {
             catch (exception e) {}
         }
         if (mode == '2' || mode == '4' || mode == '6') {
-            cout << "Would you rather have:\n(1) Patterned disks (like |////|) or\n(2) Numbered disks (like |1111|)?" << endl;
+            print("Would you rather have:\n(1) Patterned disks (like |////|) or\n(2) Numbered disks (like |1111|) or\n(3) Colored disks (like ");
+            print("|____|", BLUE);
+            println(")?");
             while (true) {
                 char inpChar;
                 cin >> inpChar;
                 try {
-                    if (inpChar == '1' || inpChar == '2') {
-                        pattern = inpChar == '1';
+                    if (inpChar == '1' || inpChar == '2' || inpChar == '3') {
+                        pattern = inpChar - '1';
                         break;
                     }
                 } catch (exception e) {}
@@ -250,7 +254,7 @@ int main()
     do {
         CLEAR_CONSOLE
         game();
-        cout << "Go again (y/n)? ";
+        print("Go again (y/n)? ", BLUE);
         char cont;
         cin >> cont;
         if (!CONFIRM_COND(cont)) break;
