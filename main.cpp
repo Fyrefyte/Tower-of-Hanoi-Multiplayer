@@ -92,7 +92,7 @@ void print(string str, Args... modifiers) {
 }
 
 template <typename... Args>
-void println(string str, Args... modifiers) {
+void println(string str = "", Args... modifiers) {
     ((cout << modifiers), ...);
     cout << str << RESET << endl;
 }
@@ -104,55 +104,49 @@ void help() {
 #define EXAMPLE_SIZE_RULE "\n    []         []         []\n  __[]__ -X> __[]__       []  Invalid move\n |//////|   |//////|      []\n|________|   |____|       []"
 #define EXAMPLE_2PLAYER "\n   _[]_        []         []         []        _[]_\n  |____|       []         []         []       |////|\n |______|      []         []         []      |//////|\n|________|     []         []         []     |////////|\n    2^         2^                    1^         1^"
     CLEAR_CONSOLE
-    cout << "This program is an adaptation of the popular mathematical puzzle called the Tower of Hanoi." << endl;
+    println("This program is an adaptation of the popular mathematical puzzle called the Tower of Hanoi.");
     ENTER_TO_CONT(true);
-    cout << "In this puzzle, there are 3 poles on which you can stack disks.\nThe first pole starts with a stack of disks in decending order, so the smallest on top and largest on bottom." << endl;
-    cout << EXAMPLE_TOWERS << endl;
+    println("In this puzzle, there are 3 poles on which you can stack disks.\nThe first pole starts with a stack of disks in decending order, so the smallest on top and largest on bottom.");
+    println(EXAMPLE_TOWERS);
     ENTER_TO_CONT(false);
-    cout << "The goal is to transfer the entire tower from the leftmost pole to the rightmost pole." << endl;
-    cout << EXAMPLE_WIN << endl;
+    println("The goal is to transfer the entire tower from the leftmost pole to the rightmost pole.");
+    println(EXAMPLE_WIN);
     ENTER_TO_CONT(false);
-    cout << "In order to do so, you may move one disk at a time, without ever placing a disk on top of one smaller than itself." << endl;
-    cout << EXAMPLE_MOVES << endl << endl;
-    cout << EXAMPLE_SIZE_RULE << endl;
+    println("In order to do so, you may move one disk at a time, without ever placing a disk on top of one smaller than itself.");
+    println(EXAMPLE_MOVES);
+    println();
+    println(EXAMPLE_SIZE_RULE);
     ENTER_TO_CONT(false);
-    cout << "An interesting property of this ruleset is that any size of tower is solvable with only 3 poles in just 2^n - 1 moves, where n is the number of disks." << endl;
-    cout << "Check out https://en.wikipedia.org/wiki/Tower_of_Hanoi for more on the mathematical puzzle." << endl;
-    cout << "I recommend trying to mess around find your own solution before looking here, as it contains the general optimal solution." << endl;
+    println("An interesting property of this ruleset is that any size of tower is solvable with only 3 poles in just 2^n - 1 moves, where n is the number of disks.");
+    println("Check out https://en.wikipedia.org/wiki/Tower_of_Hanoi for more on the mathematical puzzle.");
+    println("I recommend trying to mess around find your own solution before looking here, as it contains the general optimal solution.");
     ENTER_TO_CONT(false);
-    cout << "In addition to the 1-player mode, which mirrors the original puzzle, there are 2, 4, and 6-player modes available." << endl;
-    cout << "All the multiplayer modes are similar in nature, where several players are racing to complete their tower before the others." << endl;
+    println("In addition to the 1-player mode, which mirrors the original puzzle, there are 2, 4, and 6-player modes available.");
+    println("All the multiplayer modes are similar in nature, where several players are racing to complete their tower before the others.");
     ENTER_TO_CONT(false);
-    cout << "The rules are the same as the 1-player rule, except you can only move your own pieces and you must get your tower to one of the opposing poles, as indicated." << endl;
-    cout << "Building a complete tower on any of the indicated goal poles is considered a win." << endl;
-    cout << EXAMPLE_2PLAYER << endl;
+    println("The rules are the same as the 1-player rule, except you can only move your own pieces and you must get your tower to one of the opposing poles, as indicated.");
+    println("Building a complete tower on any of the indicated goal poles is considered a win.");
+    println(EXAMPLE_2PLAYER);
     ENTER_TO_CONT(false);
-    cout << "A couple tips:" << endl;
-    cout << " - When entering the to-from values in modes with fewer than 10 poles, you can enter both values simultaneously (e.g. entering \"12\" to mean \"from 1 to 2\")" << endl;
-    cout << " - Try any algorithm you come up with on both a 3-size tower and a 4-size tower during testing. Even and odd-height towers work slightly differently." << endl;
-    cout << " - Any tower over the size of 6 takes at least 100 moves to complete. You have been warned." << endl;
-    cout << " - Don't jump right into the 20-size tower. It takes over a million moves to solve. Honestly, don't even bother." << endl << endl;
-    cout << "Good luck!" << endl;
+    println("A couple tips:");
+    println(" - When entering the to-from values in modes with fewer than 10 poles, you can enter both values simultaneously (e.g. entering \"12\" to mean \"from 1 to 2\")");
+    println(" - Try any algorithm you come up with on both a 3-size tower and a 4-size tower during testing. Even and odd-height towers work slightly differently.");
+    println(" - Any tower over the size of 6 takes at least 100 moves to complete. You have been warned.");
+    println(" - Don't jump right into the 20-size tower. It takes over a million moves to solve. Honestly, don't even bother.");
+    println();
+    println("Good luck!");
     ENTER_TO_CONT(false);
 }
 
 void game() {
     println("Welcome to the Tower of Hanoi!", RED, BOLD);
-    println("Created by Leo Canales\nEnter anything not listed below for help and details\n", RED);
+    println("Created by Leo Canales, MIT License 2026\nEnter anything not listed below for help and details\n", RED);
     println("Select number of players:", BLUE, BOLD);
     println("(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n", BLUE);
     println("Or, choose an autoplay mode:", GREEN, BOLD);
     println("(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution", GREEN);
     println("(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n", GREEN);
     print("> ");
-    // cout << "Welcome to the Tower of Hanoi!\n\n"
-    //      << "Select number of players:\n"
-    //      << "(1) \033[4m1\033[24m-Player\n(2) \033[4m2\033[24m-Player\n(4) \033[4m4\033[24m-Player\n(6) \033[4m6\033[24m-Player\n\n"
-    //      << "Or, choose an autoplay mode:\n"
-    //      << "(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution\n"
-    //      << "(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n\n"
-    //      << "Or, enter anything else for help and details\n"
-    //      << "> " << flush;
     char mode;
     cin >> mode;
     uint8_t size;
@@ -160,7 +154,8 @@ void game() {
     if (mode == '1' || mode == '2' || mode == '4' || mode == '6' ||
         mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v' ||
         mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p') {
-        cout << "What size of towers do you want? (min 3, max 20)" << endl;
+        CLEAR_CONSOLE
+        print("Enter tower size (min 3, max 20): ", BLUE, BOLD);
         while (true) {
             string inpString;
             getline(cin, inpString);
@@ -197,7 +192,7 @@ void game() {
                 CLEAR_CONSOLE
                 showFullMoveset(hanoiAuto, true);
             } catch (exception e) {
-                cout << "No solution has been saved for this tower size" << endl;
+                println("No solution has been saved for this tower size", RED);
             }
             break;
         }
@@ -212,7 +207,7 @@ void game() {
                 showCurrentMove(hanoiAuto);
                 while (playNextMove(hanoiAuto));
             } catch (exception e) {
-                cout << "No solution has been saved for this tower size" << endl;
+                println("No solution has been saved for this tower size", RED);
             }
             break;
         }
