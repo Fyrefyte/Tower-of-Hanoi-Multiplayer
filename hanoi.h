@@ -243,7 +243,6 @@ public:
                 towers.moveSeq->save(fileString);
             }
         }
-        // TODO add play again option
     }
 };
 
@@ -254,10 +253,68 @@ private:
     Hanoi<T, maxSize, numTowers> hanoi;
     MoveSeq<T> moves;
     size_t currentMove = 0;
+    const T size;
 public:
-    HanoiAuto(T size = 5, T goalTower = 2) : hanoi(size, goalTower) {}
+    HanoiAuto(T size = 5, T goalTower = 2) : size(size), hanoi(size, goalTower) {}
     void setMoves(MoveSeq<T> newMoves) { moves = newMoves; }
     T movesLeft() { return moves.movesLeft(); }
+    void setBestMoves() {
+        moves.clear();
+        hanoi.reset();
+        // Alternate between:
+        // - Moving the top piece "clockwise" if size is even or "counterclockwise" if size is odd
+        // - Performing the only other legal move
+        // The first and last moves must both be top piece moves, so we check win only after the top piece move
+        if (size % 2 == 0) { // Even case
+            hanoi.movePiece(0, 1);
+            moves.addMove(0, 1);
+            T topPieceFrom = 1;
+            T topPieceTo = 2;
+            T otherFrom = 0;
+            while (!hanoi.checkWin()) {
+                // Other legal move
+                if (hanoi.canMove(topPieceTo, otherFrom)) {
+                    hanoi.movePiece(topPieceTo, otherFrom);
+                    moves.addMove(topPieceTo, otherFrom);
+                }
+                else {
+                    hanoi.movePiece(otherFrom, topPieceTo);
+                    moves.addMove(otherFrom, topPieceTo);
+                }
+                // Top piece rotation
+                hanoi.movePiece(topPieceFrom, topPieceTo);
+                moves.addMove(topPieceFrom, topPieceTo);
+                topPieceFrom = (topPieceFrom + 1) % 3;
+                topPieceTo = (topPieceTo + 1) % 3;
+                otherFrom = (otherFrom + 1) % 3;
+            }
+        }
+        else { // Odd case
+            hanoi.movePiece(0, 2);
+            moves.addMove(0, 2);
+            T topPieceFrom = 2;
+            T topPieceTo = 1;
+            T otherFrom = 0;
+            while (!hanoi.checkWin()) {
+                // Other legal move
+                if (hanoi.canMove(topPieceTo, otherFrom)) {
+                    hanoi.movePiece(topPieceTo, otherFrom);
+                    moves.addMove(topPieceTo, otherFrom);
+                }
+                else {
+                    hanoi.movePiece(otherFrom, topPieceTo);
+                    moves.addMove(otherFrom, topPieceTo);
+                }
+                // Top piece rotation
+                hanoi.movePiece(topPieceFrom, topPieceTo);
+                moves.addMove(topPieceFrom, topPieceTo);
+                topPieceFrom = (topPieceFrom + 2) % 3;
+                topPieceTo = (topPieceTo + 2) % 3;
+                otherFrom = (otherFrom + 2) % 3;
+            }
+        }
+        hanoi.reset();
+    }
     friend void showCurrentMove(HanoiAuto<T, maxSize, numTowers>& hanoiAuto, bool prevInput = false) {
         printTowers(hanoiAuto.hanoi);
         ENTER_TO_CONT(prevInput);
@@ -432,7 +489,6 @@ public:
         CLEAR_CONSOLE;
         printTowers(towers);
         std::cout << "Player " << towers.checkWin() + 1 << " wins!" << std::endl;
-        // TODO add play again option
     }
 };
 

@@ -216,6 +216,23 @@ void game() {
             }
             break;
         }
+        case 'a':
+        case 'A': { // TODO build this
+            HanoiAuto<uint8_t> hanoiAuto = HanoiAuto<uint8_t>(size);
+            hanoiAuto.setBestMoves();
+            CLEAR_CONSOLE
+            showFullMoveset(hanoiAuto, true);
+            break;
+        }
+        case 'p':
+        case 'P': {
+            HanoiAuto<uint8_t> hanoiAuto = HanoiAuto<uint8_t>(size);
+            hanoiAuto.setBestMoves();
+            CLEAR_CONSOLE
+            showCurrentMove(hanoiAuto);
+            while (playNextMove(hanoiAuto));
+            break;
+        }
         case '1': {
             MoveSeq<uint8_t> seq;
             Hanoi<uint8_t> hanoi = Hanoi<uint8_t>(&seq, size);
