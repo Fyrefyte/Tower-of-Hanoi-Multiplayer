@@ -3,6 +3,7 @@
 #include <sstream>
 #include <type_traits>
 #include <algorithm>
+#include <random>
 
 template <typename T, T maxSize, T numTowers>
 Hanoi<T, maxSize, numTowers>::Hanoi(T towerSize, T goalTower) : useSeq(false) {
@@ -156,12 +157,9 @@ bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::movePiece(T 
 
 template <typename T, T maxSize, T numTowers>
 void Hanoi<T, maxSize, numTowers>::reset() {
-    for (T i = 0; i < numTowers; i++) {
-        towers[i].empty();
-    }
-    for (T i = size; i > 0; i--) {
-        towers[0].push(&pieces[i-1]);
-    }
+    randomized = false;
+    for (T i = 0; i < numTowers; i++) towers[i].empty();
+    for (T i = size; i > 0; i--) towers[0].push(&pieces[i-1]);
     if (useSeq) moveSeq->clear();
 }
 
@@ -178,6 +176,16 @@ void HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::reset() {
             // std::cout << "Piece pushed: " << static_cast<size_t>(*towers[starts[j]].top1()) << " for player " << static_cast<size_t>(*towers[starts[j]].top2()) << std::endl;
         }
     }
+}
+
+template <typename T, T maxSize, T numTowers>
+void Hanoi<T, maxSize, numTowers>::randomize() {
+    randomized = true;
+    for (T i = 0; i < numTowers; i++) towers[i].empty();
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<size_t> dist = std::uniform_int_distribution<size_t>(0, numTowers);
+    for (T i = size; i > 0; i--) towers[dist(gen)].push(&pieces[i-1]);
 }
 
 template <typename T, T maxSize, T numTowers>

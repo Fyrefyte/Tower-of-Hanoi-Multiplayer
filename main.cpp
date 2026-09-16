@@ -146,7 +146,8 @@ void game() {
     println("Or, choose an autoplay mode:", GREEN, BOLD);
     println("(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution", GREEN);
     println("(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n", GREEN);
-    // println("Or, check out an experiment:", YELLOW, BOLD);
+    println("Or, check out an experiment:", YELLOW, BOLD);
+    println("(M) \033[4mM\033[24mixed-up", YELLOW);
     // println("(B) \033[4mB\033[24micolor Hanoi\n", YELLOW);
     print("> ");
     char mode;
@@ -155,7 +156,8 @@ void game() {
     uint8_t pattern;
     if (mode == '1' || mode == '2' || mode == '4' || mode == '6' ||
         mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v' ||
-        mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p') {
+        mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p' ||
+        mode == 'M' || mode == 'm') {
         CLEAR_CONSOLE
         print("Enter tower size", BOLD);
         println(" (min 3, max 20)");
@@ -229,6 +231,33 @@ void game() {
         }
     }
     switch (mode) {
+        case '1': {
+            MoveSeq<uint8_t> seq;
+            Hanoi<uint8_t> hanoi = Hanoi<uint8_t>(&seq, size);
+            gameLoop(hanoi);
+            break;
+        }
+        case '2': {
+            uint8_t startTowers[2] = {0, 4};
+            uint8_t goalTowers[2][2] = {{3, 4}, {0, 1}};
+            HanoiMultiplayer<uint8_t> hanoi = HanoiMultiplayer<uint8_t>(size, startTowers, goalTowers, pattern);
+            gameLoop(hanoi);
+            break;
+        }
+        case '4': {
+            uint8_t startTowers[4] = {0, 2, 6, 8};
+            uint8_t goalTowers[4][2] = {{5, 6}, {7, 8}, {2, 3}, {0, 1}};
+            HanoiMultiplayer<uint8_t, 20, 9, 4> hanoi = HanoiMultiplayer<uint8_t, 20, 9, 4>(size, startTowers, goalTowers, pattern);
+            gameLoop(hanoi);
+            break;
+        }
+        case '6': {
+            uint8_t startTowers[6] = {0, 2, 4, 8, 10, 12};
+            uint8_t goalTowers[6][2] = {{7, 8}, {11, 12}, {9, 10}, {4, 5}, {2, 3}, {0, 1}};
+            HanoiMultiplayer<uint8_t, 20, 13, 6> hanoi = HanoiMultiplayer<uint8_t, 20, 13, 6>(size, startTowers, goalTowers, pattern);
+            gameLoop(hanoi);
+            break;
+        }
         case 'v':
         case 'V': {
             MoveSeq<uint8_t> seq;
@@ -275,30 +304,11 @@ void game() {
             while (playNextMove(hanoiAuto));
             break;
         }
-        case '1': {
+        case 'm':
+        case 'M': {
             MoveSeq<uint8_t> seq;
             Hanoi<uint8_t> hanoi = Hanoi<uint8_t>(&seq, size);
-            gameLoop(hanoi);
-            break;
-        }
-        case '2': {
-            uint8_t startTowers[2] = {0, 4};
-            uint8_t goalTowers[2][2] = {{3, 4}, {0, 1}};
-            HanoiMultiplayer<uint8_t> hanoi = HanoiMultiplayer<uint8_t>(size, startTowers, goalTowers, pattern);
-            gameLoop(hanoi);
-            break;
-        }
-        case '4': {
-            uint8_t startTowers[4] = {0, 2, 6, 8};
-            uint8_t goalTowers[4][2] = {{5, 6}, {7, 8}, {2, 3}, {0, 1}};
-            HanoiMultiplayer<uint8_t, 20, 9, 4> hanoi = HanoiMultiplayer<uint8_t, 20, 9, 4>(size, startTowers, goalTowers, pattern);
-            gameLoop(hanoi);
-            break;
-        }
-        case '6': {
-            uint8_t startTowers[6] = {0, 2, 4, 8, 10, 12};
-            uint8_t goalTowers[6][2] = {{7, 8}, {11, 12}, {9, 10}, {4, 5}, {2, 3}, {0, 1}};
-            HanoiMultiplayer<uint8_t, 20, 13, 6> hanoi = HanoiMultiplayer<uint8_t, 20, 13, 6>(size, startTowers, goalTowers, pattern);
+            hanoi.randomize();
             gameLoop(hanoi);
             break;
         }

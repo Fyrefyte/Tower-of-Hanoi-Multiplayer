@@ -119,6 +119,7 @@ private:
     T goal;
     const T towerCount = numTowers;
     size_t moveCount = 0;
+    bool randomized = false;
 public:
     Hanoi(T = 5, T = 2);
     Hanoi(MoveSeq<T>*, T = 5, T = 2);
@@ -128,6 +129,7 @@ public:
     bool checkWin();
     bool movePiece(T, T);
     void reset();
+    void randomize();
     std::ostringstream computeSegment(const T, const T);
 
     friend void printTowers(Hanoi<T, maxSize, numTowers>& towers) {
