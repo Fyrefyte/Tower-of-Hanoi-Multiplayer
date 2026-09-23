@@ -16,3 +16,11 @@ install(TARGETS EECE2080C_tower
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+target_link_libraries(EECE2080C_tower PRIVATE
+    -static-libgcc
+    -static-libstdc++
+    -Wl,-Bstatic,--whole-archive
+        -lwinpthread
+    -Wl,--no-whole-archive
+)

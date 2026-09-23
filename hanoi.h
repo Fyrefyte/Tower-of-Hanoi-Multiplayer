@@ -228,7 +228,7 @@ public:
         while (!towers.checkWin()) gameStep(towers);
         CLEAR_CONSOLE;
         printTowers(towers);
-        std::cout << "You win!" << std::endl;
+        std::cout << BOLD << "You win!" << RESET << std::endl;
         if (!towers.randomized) {
             std::cout << "You took " << towers.moveCount << " moves, which is ";
             if (towers.moveCount == (1LL << towers.size) - 1) {
@@ -489,13 +489,15 @@ public:
     }
 
     friend void gameLoop(HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>& towers) {
-        while (towers.checkWin() == static_cast<T>(-1)) {
+        T winner = towers.checkWin();
+        while (winner == static_cast<T>(-1)) {
             gameStep(towers);
+            winner = towers.checkWin();
             ++towers.turn %= numPlayers;
         }
         CLEAR_CONSOLE;
         printTowers(towers);
-        std::cout << "Player " << towers.checkWin() + 1 << " wins!" << std::endl;
+        std::cout << towers.getPlayerColor(winner) << BOLD << "Player " << winner + 1 << " wins!" << RESET << std::endl;
     }
 };
 

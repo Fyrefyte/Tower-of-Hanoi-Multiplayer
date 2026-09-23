@@ -323,7 +323,7 @@ int main()
     do {
         CLEAR_CONSOLE
         game();
-        print("Go again (y/n)? ", BLUE);
+        print("Go again (y/n)? ", BOLD);
         char cont;
         cin >> cont;
         if (!CONFIRM_COND(cont)) break;
