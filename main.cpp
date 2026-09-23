@@ -146,7 +146,7 @@ void game() {
     println("Or, choose an autoplay mode:", GREEN, BOLD);
     println("(V) \033[4mV\033[24miew Saved Solution\n(R) \033[4mR\033[24meplay Saved Solution", GREEN);
     println("(A) View \033[4mA\033[24muto Solve Solution\n(P) \033[4mP\033[24mlay Auto Solve Solution\n", GREEN);
-    println("Or, check out an experiment:", YELLOW, BOLD);
+    println("Or, check out an experiment (these may crash):", YELLOW, BOLD);
     println("(M) \033[4mM\033[24mixed-up", YELLOW);
     // println("(B) \033[4mB\033[24micolor Hanoi\n", YELLOW);
     print("> ");

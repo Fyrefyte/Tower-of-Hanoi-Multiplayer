@@ -184,7 +184,7 @@ void Hanoi<T, maxSize, numTowers>::randomize() {
     for (T i = 0; i < numTowers; i++) towers[i].empty();
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> dist = std::uniform_int_distribution<size_t>(0, numTowers);
+    std::uniform_int_distribution<size_t> dist = std::uniform_int_distribution<size_t>(0, numTowers-1);
     for (T i = size; i > 0; i--) towers[dist(gen)].push(&pieces[i-1]);
 }
 

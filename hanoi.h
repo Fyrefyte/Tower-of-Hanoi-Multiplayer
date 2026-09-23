@@ -229,23 +229,25 @@ public:
         CLEAR_CONSOLE;
         printTowers(towers);
         std::cout << "You win!" << std::endl;
-        std::cout << "You took " << towers.moveCount << " moves, which is ";
-        if (towers.moveCount == (1LL << towers.size) - 1) {
-            std::cout << "optimal!" << std::endl;
-        }
-        else if (towers.moveCount == (1LL << towers.size)) {
-            std::cout << "1 move more than optimal." << std::endl;
-        }
-        else {
-            std::cout << (towers.moveCount - (1LL << towers.size) + 1) << " moves more than optimal." << std::endl;
-        }
-        if (towers.useSeq) {
-            std::cout << "Save this sequence (y/n)? ";
-            char inpChar;
-            std::cin >> inpChar;
-            if (CONFIRM_COND(inpChar)) {
-                std::string fileString = std::to_string(static_cast<unsigned int>(towers.size));
-                std::cout << "Saved to " << towers.moveSeq->save(fileString) << std::endl;
+        if (!towers.randomized) {
+            std::cout << "You took " << towers.moveCount << " moves, which is ";
+            if (towers.moveCount == (1LL << towers.size) - 1) {
+                std::cout << "optimal!" << std::endl;
+            }
+            else if (towers.moveCount == (1LL << towers.size)) {
+                std::cout << "1 move more than optimal." << std::endl;
+            }
+            else {
+                std::cout << (towers.moveCount - (1LL << towers.size) + 1) << " moves more than optimal." << std::endl;
+            }
+            if (towers.useSeq) {
+                std::cout << "Save this sequence (y/n)? ";
+                char inpChar;
+                std::cin >> inpChar;
+                if (CONFIRM_COND(inpChar)) {
+                    std::string fileString = std::to_string(static_cast<unsigned int>(towers.size));
+                    std::cout << "Saved to " << towers.moveSeq->save(fileString) << std::endl;
+                }
             }
         }
     }
