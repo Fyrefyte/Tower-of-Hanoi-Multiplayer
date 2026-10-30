@@ -1,6 +1,10 @@
 #include "queue.h"
 #include <stdexcept>
 
+/**
+ * @brief Gets and returns the value at the front of the queue.
+ * @return A pointer to the value.
+ */
 template <typename T>
 const T* Queue<T>::dequeue() {
     if (count == 0) throw std::underflow_error("Attempted to dequeue empty queue");
@@ -12,6 +16,10 @@ const T* Queue<T>::dequeue() {
     return _result;
 }
 
+/**
+ * @brief Adds a value to the back of the queue.
+ * @param dataPtr The pointer to add.
+ */
 template <typename T>
 void Queue<T>::enqueue(T* dataPtr) {
     Node<T>* node = new Node<T>(dataPtr);
@@ -27,6 +35,9 @@ void Queue<T>::enqueue(T* dataPtr) {
     count++;
 }
 
+/**
+ * @brief Clears the queue.
+ */
 template <typename T>
 void Queue<T>::clear() {
     while (count > 0) dequeue();
