@@ -172,19 +172,18 @@ void game() {
             }
             catch (exception e) {}
         }
-        print("\nAllow stacking same size disks? ", BOLD);
-        print("(y/n) ");
-        char inp;
-        cin >> inp;
-        bool allowStackingSameSize = CONFIRM_COND(inp);
         if (mode == '2' || mode == '4' || mode == '6') {
-            print("\nColors? ", BOLD);
+            print("\nAllow stacking same size disks? (Note that this may cause a softlock in the worst case) ", BOLD);
             print("(y/n) ");
             char inp;
             cin >> inp;
+            bool allowStackingSameSize = CONFIRM_COND(inp);
+            print("\nColors? ", BOLD);
+            print("(y/n) ");
+            cin >> inp;
             bool colors = CONFIRM_COND(inp);
             if (colors) {
-                print("Choose disk patterns:   ");
+                print("\nChoose disk patterns:   ", BOLD);
                 print("_", BLUE);
                 print("[]");
                 println("_", BLUE);
