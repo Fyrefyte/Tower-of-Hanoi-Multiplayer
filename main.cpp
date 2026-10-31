@@ -154,6 +154,7 @@ void game() {
     cin >> mode;
     uint8_t size;
     uint8_t pattern;
+    bool allowStackingSameSize;
     if (mode == '1' || mode == '2' || mode == '4' || mode == '6' ||
         mode == 'R' || mode == 'r' || mode == 'V' || mode == 'v' ||
         mode == 'A' || mode == 'a' || mode == 'P' || mode == 'p' ||
@@ -171,6 +172,11 @@ void game() {
             }
             catch (exception e) {}
         }
+        print("\nAllow stacking same size disks? ", BOLD);
+        print("(y/n) ");
+        char inp;
+        cin >> inp;
+        bool allowStackingSameSize = CONFIRM_COND(inp);
         if (mode == '2' || mode == '4' || mode == '6') {
             print("\nColors? ", BOLD);
             print("(y/n) ");
@@ -240,21 +246,21 @@ void game() {
         case '2': {
             uint8_t startTowers[2] = {0, 4};
             uint8_t goalTowers[2][2] = {{3, 4}, {0, 1}};
-            HanoiMultiplayer<uint8_t> hanoi = HanoiMultiplayer<uint8_t>(size, startTowers, goalTowers, pattern);
+            HanoiMultiplayer<uint8_t> hanoi = HanoiMultiplayer<uint8_t>(size, startTowers, goalTowers, pattern, allowStackingSameSize);
             gameLoop(hanoi);
             break;
         }
         case '4': {
             uint8_t startTowers[4] = {0, 2, 6, 8};
             uint8_t goalTowers[4][2] = {{5, 6}, {7, 8}, {2, 3}, {0, 1}};
-            HanoiMultiplayer<uint8_t, 20, 9, 4> hanoi = HanoiMultiplayer<uint8_t, 20, 9, 4>(size, startTowers, goalTowers, pattern);
+            HanoiMultiplayer<uint8_t, 20, 9, 4> hanoi = HanoiMultiplayer<uint8_t, 20, 9, 4>(size, startTowers, goalTowers, pattern, allowStackingSameSize);
             gameLoop(hanoi);
             break;
         }
         case '6': {
             uint8_t startTowers[6] = {0, 2, 4, 8, 10, 12};
             uint8_t goalTowers[6][2] = {{7, 8}, {11, 12}, {9, 10}, {4, 5}, {2, 3}, {0, 1}};
-            HanoiMultiplayer<uint8_t, 20, 13, 6> hanoi = HanoiMultiplayer<uint8_t, 20, 13, 6>(size, startTowers, goalTowers, pattern);
+            HanoiMultiplayer<uint8_t, 20, 13, 6> hanoi = HanoiMultiplayer<uint8_t, 20, 13, 6>(size, startTowers, goalTowers, pattern, allowStackingSameSize);
             gameLoop(hanoi);
             break;
         }

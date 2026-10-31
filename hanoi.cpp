@@ -35,7 +35,7 @@ Hanoi<T, maxSize, numTowers>::Hanoi(MoveSeq<T>* outSeq, T towerSize, T goalTower
 }
 
 template <typename T, T maxSize, T numTowers, T numPlayers, T numGoals>
-HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(T towerSize, T (&startTowers)[numPlayers], T (&goalTowers)[numPlayers][numGoals], uint8_t mode): diskMode(mode), size(towerSize) {
+HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::HanoiMultiplayer(T towerSize, T (&startTowers)[numPlayers], T (&goalTowers)[numPlayers][numGoals], uint8_t mode, bool stackingAllowed): diskMode(mode), allowStackingSameSize(stackingAllowed), size(towerSize) {
     static_assert(std::is_arithmetic_v<T>, "Typename T must be numeric");
     for (T i = 0; i < numPlayers; i++) std::copy(goalTowers[i], goalTowers[i] + numPlayers, goals[i]);
     std::copy(startTowers, startTowers + numPlayers, starts);
@@ -101,6 +101,7 @@ bool HanoiMultiplayer<T, maxSize, numTowers, numPlayers, numGoals>::canMove(T to
         canMoveTo(tower2) &&
         (
             towers[tower2].isEmpty() ||
+            (allowStackingSameSize && towers[tower1].top1() == towers[tower2].top1()) ||
             towers[tower1].top1() < towers[tower2].top1()
         )
     );

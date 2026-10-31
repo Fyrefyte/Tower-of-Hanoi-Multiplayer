@@ -350,6 +350,7 @@ private:
     const T size;
     const T towerCount = numTowers;
     const uint8_t diskMode;
+    const bool allowStackingSameSize;
     StackPaired<T, T, maxSize> towers[numTowers];
     T pieces[maxSize];
     T players[numPlayers];
@@ -358,7 +359,7 @@ private:
     T turn = 0;
     size_t moveCount = 0;
 public:
-    HanoiMultiplayer(T, T(&)[numPlayers], T(&)[numPlayers][numGoals], uint8_t = 0);
+    HanoiMultiplayer(T, T(&)[numPlayers], T(&)[numPlayers][numGoals], uint8_t = 0, bool = false);
     bool canMoveFrom(T);
     bool canMoveTo(T);
     bool canMove(T, T);
